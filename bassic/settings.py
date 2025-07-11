@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     # local
     'maskan',
     'one_to_one',
-    
+    'front',
 ]
 
 MIDDLEWARE = [
