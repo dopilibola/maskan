@@ -6,10 +6,9 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('maskan.urls')),
+    path('', include('front.urls')),
+    path('maskan/', include('maskan.urls')),
     path('userdata/', include('one_to_one.urls')),
-
-
 ]
 
 
