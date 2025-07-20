@@ -5,6 +5,10 @@ from .forms import SignUpForm, ChangePasswordForm, ProfileForm
 from .models import Profile
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
+from django.http import JsonResponse
+from .models import Cemeterys, Grave
+from django.shortcuts import get_object_or_404
+
 
 
 # Create your views here.
@@ -139,3 +143,30 @@ def owner_dashboard(request):
 
     return render(request, 'owner_dashboard.html')  # Faqat egalar ko‘radigan HTML
 
+
+
+
+
+
+def get_cemeteries(request):
+    cemeteries = Cemeterys.objects.all().values()
+    return JsonResponse(list(cemeteries), safe=False)
+
+def get_graves(request, cemetery_id):
+    graves = Grave.objects.filter(cemetery_id=cemetery_id).values('id', 'row', 'column', 'is_occupied')
+    return JsonResponse(list(graves), safe=False)
+
+def get_grave_detail(request, grave_id):
+    grave = get_object_or_404(Grave, id=grave_id)
+    if hasattr(grave, 'person'):
+        person = grave.person
+        data = {
+            'name': person.name,
+            'birth': person.birth_date,
+            'death': person.death_date,
+            'description': person.description,
+            'image': person.image,
+            'grave': f"{grave.row}{grave.column}"
+        }
+        return JsonResponse(data)
+    return JsonResponse({'error': 'No person found'}, status=404)

@@ -1,7 +1,5 @@
 from django.urls import path, include
 from .import views
-# from django.conf import settings
-# from django.conf.urls.static import static
 
 
 
@@ -15,6 +13,10 @@ urlpatterns = [
     path('profile/', views.edit_profile, name='profile'),
     path('profiledet/', views.profile_detail, name='profile_detail'),
 
+    path('api/cemeteries/', views.get_cemeteries, name='get-cemeteries'),
+    path('api/cemeteries/<int:cemetery_id>/graves/', views.get_graves, name='get-graves'),
+    path('api/grave/<int:grave_id>/', views.get_grave_detail, name='get-grave-detail'),
 ]
+
 # if settings.DEBUG:
 #     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
