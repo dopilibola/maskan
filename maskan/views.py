@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from .forms import SignUpForm, ChangePasswordForm, ProfileForm
-from .models import Profile
+from .models import Profile, Product
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
 from django.http import JsonResponse
@@ -14,12 +14,7 @@ from django.shortcuts import get_object_or_404
 # Create your views here.
 
 
-def home(request):
-    is_qabriston_egasi = False
-    if request.user.is_authenticated:
-        is_qabriston_egasi = request.user.groups.filter(name='Qabriston Egasi').exists()
 
-    return render(request, 'home.html', {'is_qabriston_egasi': is_qabriston_egasi})
 
 
 
@@ -148,25 +143,78 @@ def owner_dashboard(request):
 
 
 
-def get_cemeteries(request):
-    cemeteries = Cemeterys.objects.all().values()
-    return JsonResponse(list(cemeteries), safe=False)
+# def get_cemeteries(request):
+#     cemeteries = Cemeterys.objects.all().values()
+#     return JsonResponse(list(cemeteries), safe=False)
 
-def get_graves(request, cemetery_id):
-    graves = Grave.objects.filter(cemetery_id=cemetery_id).values('id', 'row', 'column', 'is_occupied')
-    return JsonResponse(list(graves), safe=False)
+# def get_graves(request, cemetery_id):
+#     graves = Grave.objects.filter(cemetery_id=cemetery_id).values('id', 'row', 'column', 'is_occupied')
+#     return JsonResponse(list(graves), safe=False)
 
-def get_grave_detail(request, grave_id):
-    grave = get_object_or_404(Grave, id=grave_id)
-    if hasattr(grave, 'person'):
-        person = grave.person
-        data = {
-            'name': person.name,
-            'birth': person.birth_date,
-            'death': person.death_date,
-            'description': person.description,
-            'image': person.image,
-            'grave': f"{grave.row}{grave.column}"
-        }
-        return JsonResponse(data)
-    return JsonResponse({'error': 'No person found'}, status=404)
+# def get_grave_detail(request, grave_id):
+#     grave = get_object_or_404(Grave, id=grave_id)
+#     if hasattr(grave, 'person'):
+#         person = grave.person
+#         data = {
+#             'name': person.name,
+#             'birth': person.birth_date,
+#             'death': person.death_date,
+#             'description': person.description,
+#             'image': person.image,
+#             'grave': f"{grave.row}{grave.column}"
+#         }
+#         return JsonResponse(data)
+#     return JsonResponse({'error': 'No person found'}, status=404)
+
+def search(request):
+    # Determine if they filled our the form 
+    if request.method == "POST":
+        searched = request.POST['searched']
+        # Query The Product DB Model
+        searched = Product.objects.filter(Q(name__icontains=searched) | Q(description__icontains=searched))
+        
+        if not searched:
+            messages.success(request, "That product Does Not Exist... Please try again.  ")
+            return render(request, "search.html", {})
+        else:  
+            return render(request, "search.html", {'searched':searched})
+    else:
+        return render(request, "search.html", {})
+
+
+def product(request, pk):
+    product = Product.objects.get(id=pk)
+    return render(request, 'product.html', {'product':product})
+
+def category(request, foo):
+    # spaces
+    foo = foo.replace('-', ' ')
+    #category url 
+    try:
+        category = Category.objects.get(name=foo)
+        products = Product.objects.filter(category=category)
+        return render(request, 'category.html', {'products':products, 'category':category})
+
+    except:
+        messages.success(request, ("Category dosn't exist  "))
+        return redirect('home')
+    
+# def home(request):
+#     products = Product.objects.all()
+#     is_qabriston_egasi = False
+#     if request.user.is_authenticated:
+#         is_qabriston_egasi = request.user.groups.filter(name='Qabriston Egasi').exists()
+
+#     return render(request, 'home.html', {'is_qabriston_egasi': is_qabriston_egasi})
+
+
+def home(request):
+    products = Product.objects.all()
+    is_qabriston_egasi = False
+    if request.user.is_authenticated:
+        is_qabriston_egasi = request.user.groups.filter(name='Qabriston Egasi').exists()
+
+    return render(request, 'home.html', {
+        'products': products,
+        'is_qabriston_egasi': is_qabriston_egasi
+    })

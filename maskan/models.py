@@ -66,3 +66,22 @@ class Person(models.Model):
     def __str__(self):
         return self.name
 
+
+class Category(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+    
+class Product(models.Model):
+    name = models.CharField(max_length=100)
+    price = models.DecimalField(default=0, decimal_places=2, max_digits=6)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    description = models.CharField(max_length=200, default='')
+    image = models.ImageField(upload_to='uploads/products/')
+    # sale staff
+    is_sale = models.BooleanField(default=False)
+    sale_price = models.DecimalField(default=0, decimal_places=2, max_digits=6)
+
+    def __str__(self):
+        return self.name
