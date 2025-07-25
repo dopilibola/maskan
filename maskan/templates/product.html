@@ -1,55 +1,72 @@
-{% extends 'base.html'%}
+{% extends 'base.html' %}
+{% load static %}
+
 {% block content %}
 
-
-
-<div class="container">
-<br/>
-  <div class="card mb-3" >
+<div class="container my-5">
+    <div class="card mb-4 shadow">
         <div class="row g-0">
-          <div class="col-md-4">
-            <img src="{{ product.image.url }}" class="img-fluid rounded-start" alt="...">
-          </div>
-          <div class="col-md-8">
-            <div class="card-body">
-            <center>
-              <h5 class="card-title">{{ product.name}}</h5>
-              <p class="card-text">{{ product.description }}</p>
-              
-                {% if product.is_sale %}
-
-
-                <div class="d-flex justify-content-center small text-warning mb-2">
-                    <div class="bi-star-fill"></div>
-                    &nbsp; &nbsp; Sale! &nbsp; &nbsp;
-                    <div class="bi-star-fill"></div>
-                </div>
-
-                <!-- Product price-->
-                <strike>${{ product.price }}</strike>
-                &nbsp;
-                ${{ product.sale_price }}
-                 
-                
-                <br/>
-                In: {{ product.category }}
-                
+            <!-- Main image with modal trigger -->
+            <div class="col-md-5">
+                {% if product.images.all %}
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#mainImageModal">
+                        <img src="{{ product.images.all.0.image.url }}" class="img-fluid rounded-start w-100 h-100 object-fit-cover" alt="{{ product.name }}">
+                    </a>
                 {% else %}
-                    ${{ product.price }}
-                    <br/>ID: {{ product.id }}
+                    <img src="{% static 'default.jpg' %}" class="img-fluid rounded-start" alt="No image available">
                 {% endif %}
-                  <br/><br/> 
+            </div>
 
+            <!-- Product info -->
+            <div class="col-md-7">
+                <div class="card-body text-center">
+                    <h3 class="card-title">{{ product.name }}</h3>
+                    <p class="card-text">{{ product.description }}</p>
+
+                    <p class="text-muted">Category: {{ product.category }}</p>
+                    <p class="text-muted">ID: {{ product.id }}</p>
+                </div>
+            </div>
         </div>
     </div>
+
+    <!-- Image gallery -->
+    {% if product.images.all|length > 1 %}
+    <div class="mb-5">
+        <h5>Gallery:</h5>
+        <div class="d-flex flex-wrap gap-3">
+            {% for image in product.images.all %}
+                <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal{{ forloop.counter }}">
+                    <img src="{{ image.image.url }}" width="140" height="140" class="img-thumbnail" alt="Gallery image">
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
 </div>
+
+<!-- Main image modal -->
+<div class="modal fade" id="mainImageModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content bg-transparent border-0">
+      <div class="modal-body p-0">
+        <img src="{{ product.images.all.0.image.url }}" class="img-fluid w-100 rounded shadow-lg" alt="{{ product.name }}">
+      </div>
+    </div>
+  </div>
 </div>
-<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
-<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
-<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 
-<br/></br>
-
-
+<!-- Gallery image modals -->
+{% for image in product.images.all %}
+<div class="modal fade" id="imageModal{{ forloop.counter }}" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content bg-transparent border-0">
+      <div class="modal-body p-0">
+        <img src="{{ image.image.url }}" class="img-fluid w-100 rounded shadow-lg" alt="Gallery image">
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
 
 {% endblock %}

@@ -55,6 +55,17 @@ class Grave(models.Model):
         return f"{self.row}{self.column} - {self.cemetery.name}"
 
 
+
+class Location(models.Model):
+    name = models.CharField(max_length=255)
+    address = models.TextField(blank=True, null=True)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6)
+
+    def __str__(self):
+        return self.name
+
+        
 class Person(models.Model):
     grave = models.OneToOneField(Grave, on_delete=models.CASCADE, related_name='person')
     name = models.CharField(max_length=255)
@@ -73,15 +84,21 @@ class Category(models.Model):
     def __str__(self):
         return self.name
     
+# models.py
 class Product(models.Model):
     name = models.CharField(max_length=100)
-    price = models.DecimalField(default=0, decimal_places=2, max_digits=6)
+    location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    description = models.CharField(max_length=200, default='')
-    image = models.ImageField(upload_to='uploads/products/')
-    # sale staff
-    is_sale = models.BooleanField(default=False)
-    sale_price = models.DecimalField(default=0, decimal_places=2, max_digits=6)
+    description = models.CharField(max_length=50000, default='')
 
     def __str__(self):
         return self.name
+
+class ProductImage(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='uploads/products/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __sr__(self):
+        return f"{self.product.name} image"
+

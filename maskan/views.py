@@ -199,14 +199,6 @@ def category(request, foo):
         messages.success(request, ("Category dosn't exist  "))
         return redirect('home')
     
-# def home(request):
-#     products = Product.objects.all()
-#     is_qabriston_egasi = False
-#     if request.user.is_authenticated:
-#         is_qabriston_egasi = request.user.groups.filter(name='Qabriston Egasi').exists()
-
-#     return render(request, 'home.html', {'is_qabriston_egasi': is_qabriston_egasi})
-
 
 def home(request):
     products = Product.objects.all()
