@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Infodata, Qabriston, Image
+from .models import Infodata, Image, Qabristonmap, Qabristonmap_image
 from django.utils.html import format_html
 
 
@@ -55,3 +55,7 @@ class ImageAdmin(admin.ModelAdmin):
 admin.site.register(Image, ImageAdmin)  
 admin.site.register(Infodata, InfodataAdmin)
 # admin.site.register(Qabriston, QabristonAdmin)
+
+
+admin.site.register(Qabristonmap)
+admin.site.register(Qabristonmap_image)

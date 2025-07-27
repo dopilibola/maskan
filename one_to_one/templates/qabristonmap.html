@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Qabriston Xarita</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f3f4f6;
+      padding: 20px;
+    }
+
+    .grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .grave-square {
+      width: 100px;
+      height: 100px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+    }
+
+    .grave-square:hover {
+      transform: scale(1.05);
+    }
+
+    .green { background-color: green; }
+    .red { background-color: red; }
+    .yellow { background-color: orange; }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 10;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.5);
+    }
+
+    .modal-content {
+      background-color: #fff;
+      margin: 5% auto;
+      padding: 20px;
+      width: 90%;
+      max-width: 500px;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .modal-content img {
+      width: 100%;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+
+    .close {
+      float: right;
+      font-size: 24px;
+      font-weight: bold;
+      color: #aaa;
+      cursor: pointer;
+    }
+
+    .close:hover {
+      color: black;
+    }
+
+    .grave-info-box {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 15px;
+      text-align: left;
+    }
+
+    .grave-info-box div {
+      background: #f1f1f1;
+      padding: 10px;
+      border-radius: 6px;
+    }
+
+    .btn-edit {
+      margin-top: 20px;
+      padding: 10px 15px;
+      background: #e5e7eb;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Qabriston Xarita</h2>
+  <div class="grid">
+    {% for qabr in qabrlar %}
+      <div class="grave-square {{ qabr.status }}" onclick="showModal({{ qabr.id }})">
+        {{ qabr.qabr_soni }}
+      </div>
+    {% endfor %}
+  </div>
+
+  {% for qabr in qabrlar %}
+    <div class="modal" id="modal-{{ qabr.id }}">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal({{ qabr.id }})">&times;</span>
+        <h2>{{ qabr.ism_familiyasi_marhum }}</h2>
+        <p><em>{{ qabr.karta_number }}</em></p>
+
+        <div class="grave-info-box">
+          <div><strong>Yoshi:</strong><br>{{ qabr.years }}</div>
+          <div><strong>tugulgan:</strong><br>{{ qabr.years_new }}</div>
+          <div><strong>olgan:</strong><br>{{ qabr.years_old }}</div>
+          <div><strong>Qator:</strong><br>{{ qabr.qator }}</div>
+          <div><strong>Qabr #:</strong><br>{{ qabr.qabr_soni }}</div>
+        </div>
+
+        {% for img in qabr.images.all %}
+          <img src="{{ img.image.url }}" alt="Qabr rasmi">
+        {% empty %}
+          <p>Rasm yo'q</p>
+        {% endfor %}
+
+        <button class="btn-edit">✏️ Edit</button>
+      </div>
+    </div>
+  {% endfor %}
+
+  <script>
+    function showModal(id) {
+      document.getElementById('modal-' + id).style.display = 'block';
+    }
+
+    function closeModal(id) {
+      document.getElementById('modal-' + id).style.display = 'none';
+    }
+
+    // Modalni fon bosilganda yopish
+    window.onclick = function(event) {
+      const modals = document.querySelectorAll('.modal');
+      modals.forEach(modal => {
+        if (event.target === modal) {
+          modal.style.display = "none";
+        }
+      });
+    };
+  </script>
+
+</body>
+</html>

@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from .forms import InfodataForm, QabristonForm, ImageForm
-from .models import Image
+from .models import Image, Qabristonmap
 import requests
 from decouple import config
 
@@ -99,3 +99,11 @@ def upload_image(request):
 def image_list(request):
     images = Image.objects.all()
     return render(request, 'image_list.html', {'images': images})
+
+
+
+
+def qabristonmap_view(request):
+    qabrlar = Qabristonmap.objects.all().prefetch_related('images')
+    return render(request, 'qabristonmap.html', {'qabrlar': qabrlar})
+

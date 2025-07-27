@@ -19,6 +19,8 @@ urlpatterns = [
     path('search/', views.search, name='search' ),
     path('product/<int:pk>', views.product, name='product' ),
     path('category/<str:foo>', views.category, name='category' ),
+
+    path('qabristonmap/', include('one_to_one.urls')),
 ]
 
 # if settings.DEBUG:

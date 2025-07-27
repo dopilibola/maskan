@@ -22,9 +22,11 @@
                 <div class="card-body text-center">
                     <h3 class="card-title">{{ product.name }}</h3>
                     <p class="card-text">{{ product.description }}</p>
-
+                    
                     <p class="text-muted">Category: {{ product.category }}</p>
                     <p class="text-muted">ID: {{ product.id }}</p>
+                    
+                    <li class="nav-item"><a class="nav-link" href="{% url 'qabristonmap' %}">map kirish  </a></li>
                 </div>
             </div>
         </div>

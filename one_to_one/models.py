@@ -43,3 +43,31 @@ class Image(models.Model):
     def __str__(self):
         return self.malumotnoma_nomeri
 
+class Qabristonmap(models.Model):
+    STATUS_CHOICES = [
+        ('green', 'Yashil'),
+        ('yellow', 'Sariq'),
+        ('red', 'Qizil'),
+    ]
+
+    ism_familiyasi_marhum = models.CharField(max_length=20, blank=True)
+    years_old = models.CharField(max_length=20, blank=True)
+    years = models.CharField(max_length=20, blank=True)
+    years_new = models.CharField(max_length=20, blank=True)
+    karta_number = models.CharField(max_length=20, blank=True)
+    qator = models.CharField(max_length=20, blank=True)
+    qabr_soni = models.CharField(max_length=20, blank=True)
+
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='green')
+
+    def __str__(self):
+        return f"{self.ism_familiyasi_marhum} ({self.status})"
+
+
+class Qabristonmap_image(models.Model):
+    product = models.ForeignKey(Qabristonmap, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='uploads/cam/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.product.ism_familiyasi_marhum} image"
