@@ -71,3 +71,4 @@ class Qabristonmap_image(models.Model):
 
     def __str__(self):
         return f"{self.product.ism_familiyasi_marhum} image"
+ 

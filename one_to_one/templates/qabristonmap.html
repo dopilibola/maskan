@@ -10,10 +10,16 @@
       padding: 20px;
     }
 
-    .grid {
+    .row-label {
+      font-weight: bold;
+      margin-top: 20px;
+    }
+
+    .row {
       display: flex;
       flex-wrap: wrap;
-      gap: 15px;
+      gap: 10px;
+      margin-bottom: 10px;
     }
 
     .grave-square {
@@ -99,43 +105,65 @@
       border-radius: 6px;
       cursor: pointer;
     }
+
+    #kartaSelect {
+      margin-bottom: 20px;
+      padding: 8px;
+      font-size: 16px;
+    }
   </style>
 </head>
 <body>
 
   <h2>Qabriston Xarita</h2>
-  <div class="grid">
-    {% for qabr in qabrlar %}
-      <div class="grave-square {{ qabr.status }}" onclick="showModal({{ qabr.id }})">
-        {{ qabr.qabr_soni }}
+
+  <label for="kartaSelect"><strong>Kartani tanlang:</strong></label>
+  <select id="kartaSelect" onchange="filterByKarta()">
+    <option value="all">Hammasi</option>
+    {% for karta in karta_numbers %}
+      <option value="{{ karta }}">{{ karta }}</option>
+    {% endfor %}
+  </select>
+
+  <div id="grave-container">
+    {% for qator, qabrlar in grouped_qabrlar.items %}
+      <div class="row" data-qator="{{ qator }}">
+        <div class="row-label">Qator: {{ qator }}</div>
+        {% for qabr in qabrlar %}
+          <div class="grave-square {{ qabr.status }}" data-karta="{{ qabr.karta_number }}" onclick="showModal({{ qabr.id }})">
+            {{ qabr.qabr_soni }}
+          </div>
+        {% endfor %}
       </div>
     {% endfor %}
   </div>
 
-  {% for qabr in qabrlar %}
-    <div class="modal" id="modal-{{ qabr.id }}">
-      <div class="modal-content">
-        <span class="close" onclick="closeModal({{ qabr.id }})">&times;</span>
-        <h2>{{ qabr.ism_familiyasi_marhum }}</h2>
-        <p><em>{{ qabr.karta_number }}</em></p>
+  {% for qator, qabrlar in grouped_qabrlar.items %}
+    {% for qabr in qabrlar %}
+      <div class="modal" id="modal-{{ qabr.id }}">
+        <div class="modal-content">
+          <span class="close" onclick="closeModal({{ qabr.id }})">&times;</span>
+          <h2>{{ qabr.ism_familiyasi_marhum }}</h2>
+          <p><em>{{ qabr.karta_number }}</em></p>
 
-        <div class="grave-info-box">
-          <div><strong>Yoshi:</strong><br>{{ qabr.years }}</div>
-          <div><strong>tugulgan:</strong><br>{{ qabr.years_new }}</div>
-          <div><strong>olgan:</strong><br>{{ qabr.years_old }}</div>
-          <div><strong>Qator:</strong><br>{{ qabr.qator }}</div>
-          <div><strong>Qabr #:</strong><br>{{ qabr.qabr_soni }}</div>
+          <div class="grave-info-box">
+            <div><strong>Yoshi:</strong><br>{{ qabr.years }}</div>
+            <div><strong>Tug‘ilgan:</strong><br>{{ qabr.years_new }}</div>
+            <div><strong>Vafot:</strong><br>{{ qabr.years_old }}</div>
+            <div><strong>Qator:</strong><br>{{ qabr.qator }}</div>
+            <div><strong>Qabr #:</strong><br>{{ qabr.qabr_soni }}</div>
+          </div>
+
+          {% for img in qabr.images.all %}
+            <img src="{{ img.image.url }}" alt="Qabr rasmi">
+          {% empty %}
+            <p>Rasm yo'q</p>
+          {% endfor %}
+
+          <button class="btn-edit">✏️ Edit</button>
         </div>
-
-        {% for img in qabr.images.all %}
-          <img src="{{ img.image.url }}" alt="Qabr rasmi">
-        {% empty %}
-          <p>Rasm yo'q</p>
-        {% endfor %}
-
-        <button class="btn-edit">✏️ Edit</button>
       </div>
-    </div>
+    {% endfor %}
   {% endfor %}
 
   <script>
@@ -147,7 +175,6 @@
       document.getElementById('modal-' + id).style.display = 'none';
     }
 
-    // Modalni fon bosilganda yopish
     window.onclick = function(event) {
       const modals = document.querySelectorAll('.modal');
       modals.forEach(modal => {
@@ -156,6 +183,20 @@
         }
       });
     };
+
+    function filterByKarta() {
+      const selectedKarta = document.getElementById('kartaSelect').value;
+      const squares = document.querySelectorAll('.grave-square');
+
+      squares.forEach(square => {
+        const karta = square.getAttribute('data-karta');
+        if (selectedKarta === 'all' || karta === selectedKarta) {
+          square.style.display = 'flex';
+        } else {
+          square.style.display = 'none';
+        }
+      });
+    }
   </script>
 
 </body>

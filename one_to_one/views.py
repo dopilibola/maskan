@@ -4,6 +4,7 @@ from .forms import InfodataForm, QabristonForm, ImageForm
 from .models import Image, Qabristonmap
 import requests
 from decouple import config
+from collections import defaultdict, OrderedDict
 
 
 BOT_TOKEN = config('BOT_TOKEN')
@@ -103,7 +104,29 @@ def image_list(request):
 
 
 
+
+
+
+
 def qabristonmap_view(request):
     qabrlar = Qabristonmap.objects.all().prefetch_related('images')
-    return render(request, 'qabristonmap.html', {'qabrlar': qabrlar})
+    karta_numbers = Qabristonmap.objects.exclude(karta_number="").values_list('karta_number', flat=True).distinct()
 
+    # Group by qator
+    grouped_by_row = defaultdict(list)
+    for qabr in qabrlar:
+        grouped_by_row[qabr.qator].append(qabr)
+
+    # Sort rows by qator, and graves inside each row by qabr_soni (both numerically)
+    grouped_qabrlar = OrderedDict()
+    for qator in sorted(grouped_by_row, key=lambda x: int(x) if str(x).isdigit() else 999):
+        sorted_qabrlar = sorted(
+            grouped_by_row[qator],
+            key=lambda q: int(q.qabr_soni) if str(q.qabr_soni).isdigit() else 999
+        )
+        grouped_qabrlar[qator] = sorted_qabrlar
+
+    return render(request, 'qabristonmap.html', {
+        'grouped_qabrlar': grouped_qabrlar,
+        'karta_numbers': karta_numbers,
+    })
