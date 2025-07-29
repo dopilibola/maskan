@@ -22,35 +22,50 @@
       margin-bottom: 10px;
     }
 
+    /* Tomb-shaped grave marker */
     .grave-square {
-      width: 100px;
-      height: 100px;
-      border-radius: 8px;
+      position: relative;
+      width: 80px;
+      height: 120px;
+      background-color: green; /* default, overridden by status classes */
       cursor: pointer;
       transition: transform 0.2s;
+      overflow: hidden;
       display: flex;
-      align-items: center;
+      align-items: flex-end;
       justify-content: center;
       color: white;
       font-weight: bold;
+    }
+
+    .grave-square::before {
+      content: "";
+      position: absolute;
+      top: -40px;       /* arch sits above the square */
+      left: 0;
+      width: 100%;
+      height: 80px;     /* height of the half-circle arch */
+      background: inherit;
+      /* half-circle at the top */
+      border-bottom-left-radius: 50% 100%;
+      border-bottom-right-radius: 50% 100%;
     }
 
     .grave-square:hover {
       transform: scale(1.05);
     }
 
-    .green { background-color: green; }
-    .red { background-color: red; }
-    .yellow { background-color: orange; }
+    /* Status colors */
+    .grave-square.green { background-color: #16a34a; }
+    .grave-square.yellow { background-color: #d97706; }
+    .grave-square.red { background-color: #dc2626; }
 
     .modal {
       display: none;
       position: fixed;
       z-index: 10;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
       overflow: auto;
       background-color: rgba(0,0,0,0.5);
     }
@@ -117,13 +132,16 @@
 
   <h2>Qabriston Xarita</h2>
 
- 
+
+
   <div id="grave-container">
     {% for qator, qabrlar in grouped_qabrlar.items %}
       <div class="row" data-qator="{{ qator }}">
         <div class="row-label">Qator: {{ qator }}</div>
         {% for qabr in qabrlar %}
-          <div class="grave-square {{ qabr.status }}" data-karta="{{ qabr.karta_number }}" onclick="showModal({{ qabr.id }})">
+          <div class="grave-square {{ qabr.status }}"
+               data-karta="{{ qabr.karta_number }}"
+               onclick="showModal({{ qabr.id }})">
             {{ qabr.qabr_soni }}
           </div>
         {% endfor %}
@@ -150,7 +168,7 @@
           {% for img in qabr.images.all %}
             <img src="{{ img.image.url }}" alt="Qabr rasmi">
           {% empty %}
-            <p>Rasm yo'q</p>
+            <p>Rasm yo‘q</p>
           {% endfor %}
 
           <button class="btn-edit">✏️ Edit</button>
@@ -163,31 +181,18 @@
     function showModal(id) {
       document.getElementById('modal-' + id).style.display = 'block';
     }
-
     function closeModal(id) {
       document.getElementById('modal-' + id).style.display = 'none';
     }
-
     window.onclick = function(event) {
-      const modals = document.querySelectorAll('.modal');
-      modals.forEach(modal => {
-        if (event.target === modal) {
-          modal.style.display = "none";
-        }
+      document.querySelectorAll('.modal').forEach(modal => {
+        if (event.target === modal) modal.style.display = 'none';
       });
     };
-
     function filterByKarta() {
-      const selectedKarta = document.getElementById('kartaSelect').value;
-      const squares = document.querySelectorAll('.grave-square');
-
-      squares.forEach(square => {
-        const karta = square.getAttribute('data-karta');
-        if (selectedKarta === 'all' || karta === selectedKarta) {
-          square.style.display = 'flex';
-        } else {
-          square.style.display = 'none';
-        }
+      const sel = document.getElementById('kartaSelect').value;
+      document.querySelectorAll('.grave-square').forEach(el => {
+        el.style.display = (sel==='all' || el.dataset.karta===sel) ? 'flex' : 'none';
       });
     }
   </script>
