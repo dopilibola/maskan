@@ -117,14 +117,7 @@
 
   <h2>Qabriston Xarita</h2>
 
-  <label for="kartaSelect"><strong>Kartani tanlang:</strong></label>
-  <select id="kartaSelect" onchange="filterByKarta()">
-    <option value="all">Hammasi</option>
-    {% for karta in karta_numbers %}
-      <option value="{{ karta }}">{{ karta }}</option>
-    {% endfor %}
-  </select>
-
+ 
   <div id="grave-container">
     {% for qator, qabrlar in grouped_qabrlar.items %}
       <div class="row" data-qator="{{ qator }}">

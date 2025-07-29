@@ -54,7 +54,6 @@ class Qabristonmap(models.Model):
     years_old = models.CharField(max_length=20, blank=True)
     years = models.CharField(max_length=20, blank=True)
     years_new = models.CharField(max_length=20, blank=True)
-    karta_number = models.CharField(max_length=20, blank=True)
     qator = models.CharField(max_length=20, blank=True)
     qabr_soni = models.CharField(max_length=20, blank=True)
 

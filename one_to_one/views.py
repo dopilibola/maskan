@@ -110,7 +110,6 @@ def image_list(request):
 
 def qabristonmap_view(request):
     qabrlar = Qabristonmap.objects.all().prefetch_related('images')
-    karta_numbers = Qabristonmap.objects.exclude(karta_number="").values_list('karta_number', flat=True).distinct()
 
     # Group by qator
     grouped_by_row = defaultdict(list)
@@ -128,5 +127,5 @@ def qabristonmap_view(request):
 
     return render(request, 'qabristonmap.html', {
         'grouped_qabrlar': grouped_qabrlar,
-        'karta_numbers': karta_numbers,
+        
     })
