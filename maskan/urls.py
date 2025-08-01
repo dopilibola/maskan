@@ -20,7 +20,7 @@ urlpatterns = [
     path('product/<int:pk>', views.product, name='product' ),
     path('category/<str:foo>', views.category, name='category' ),
 
-    path('qabristonmap/', include('one_to_one.urls')),
+    path('qabristonmap/<int:pk>/', views.qabristonmap_view, name='qabristonmap'),
 ]
 
 # if settings.DEBUG:

@@ -2,13 +2,14 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from .forms import SignUpForm, ChangePasswordForm, ProfileForm
-from .models import Profile, Product
+from .models import Profile, Product, Category, Qabristonmap
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
 from django.http import JsonResponse
 from .models import Cemeterys, Grave
 from django.shortcuts import get_object_or_404
-
+from collections import defaultdict, OrderedDict
+from django.db.models import Q
 
 
 # Create your views here.
@@ -142,49 +143,90 @@ def owner_dashboard(request):
 
 
 
+# def search(request):
+#     # Determine if they filled our the form 
+#     if request.method == "POST":
+#         searched = request.POST['searched']
+#         # Query The Product DB Model
+#         searched = Product.objects.filter(Q(name__icontains=searched) | Q(description__icontains=searched))
+        
+        
+#         if not searched:
+#             messages.success(request, "That product Does Not Exist... Please try again.  ")
+#             return render(request, "search.html", {})
+#         else:  
+#             return render(request, "search.html", {'searched':searched})
+#     else:
+#         return render(request, "search.html", {})
 
-# def get_cemeteries(request):
-#     cemeteries = Cemeterys.objects.all().values()
-#     return JsonResponse(list(cemeteries), safe=False)
-
-# def get_graves(request, cemetery_id):
-#     graves = Grave.objects.filter(cemetery_id=cemetery_id).values('id', 'row', 'column', 'is_occupied')
-#     return JsonResponse(list(graves), safe=False)
-
-# def get_grave_detail(request, grave_id):
-#     grave = get_object_or_404(Grave, id=grave_id)
-#     if hasattr(grave, 'person'):
-#         person = grave.person
-#         data = {
-#             'name': person.name,
-#             'birth': person.birth_date,
-#             'death': person.death_date,
-#             'description': person.description,
-#             'image': person.image,
-#             'grave': f"{grave.row}{grave.column}"
-#         }
-#         return JsonResponse(data)
-#     return JsonResponse({'error': 'No person found'}, status=404)
 
 def search(request):
-    # Determine if they filled our the form 
     if request.method == "POST":
-        searched = request.POST['searched']
-        # Query The Product DB Model
-        searched = Product.objects.filter(Q(name__icontains=searched) | Q(description__icontains=searched))
-        
-        if not searched:
-            messages.success(request, "That product Does Not Exist... Please try again.  ")
-            return render(request, "search.html", {})
-        else:  
-            return render(request, "search.html", {'searched':searched})
-    else:
-        return render(request, "search.html", {})
+        query = request.POST['searched']
+        print("Qidirilyapti:", query)
+
+        # Product modelidan qidirish
+        product_results = Product.objects.filter(
+            Q(name__icontains=query) | Q(description__icontains=query)
+        )
+
+        # Qabristonmap modelidan qidirish
+        qabr_results = Qabristonmap.objects.filter(
+            Q(ism_familiyasi_marhum__icontains=query) |
+            Q(years__icontains=query) |
+            Q(years_old__icontains=query) |
+            Q(qator__icontains=query) |
+            Q(qabr_soni__icontains=query)
+        )
+
+        if not product_results and not qabr_results:
+            messages.info(request, "Hech qanday natija topilmadi.")
+
+        return render(request, "search.html", {
+            'query': query,
+            'searched_products': product_results,
+            'searched_graves': qabr_results,
+        })
+
+    return render(request, "search.html", {})
+
+
+
 
 
 def product(request, pk):
     product = Product.objects.get(id=pk)
     return render(request, 'product.html', {'product':product})
+
+
+
+def qabristonmap_view(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+
+    # Faqat shu productga tegishli qabrlar
+    qabrlar = Qabristonmap.objects.filter(product=product).prefetch_related('images')
+
+    # Qator bo‘yicha guruhlash
+    grouped_by_row = defaultdict(list)
+    for qabr in qabrlar:
+        grouped_by_row[qabr.qator].append(qabr)
+
+    # Qator va qabr_soni bo‘yicha tartiblash
+    grouped_qabrlar = OrderedDict()
+    for qator in sorted(grouped_by_row, key=lambda x: int(x) if str(x).isdigit() else 999):
+        sorted_qabrlar = sorted(
+            grouped_by_row[qator],
+            key=lambda q: int(q.qabr_soni) if str(q.qabr_soni).isdigit() else 999
+        )
+        grouped_qabrlar[qator] = sorted_qabrlar
+
+    return render(request, 'qabristonmap.html', {
+        'product': product,
+        'grouped_qabrlar': grouped_qabrlar,
+    })
+
+
+
 
 
 def category(request, foo):

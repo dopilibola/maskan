@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Cemeterys, Grave, Person, Product, Category, ProductImage, Location
+from .models import Cemeterys, Grave, Person, Product, Category, ProductImage, Location, Qabristonmap, Qabristonmap_image
 
 admin.site.register(Cemeterys)
 admin.site.register(Grave)
@@ -21,3 +21,5 @@ admin.site.register(Product, ProductAdmin)
 admin.site.register(ProductImage)
 admin.site.register(Location)
 
+admin.site.register(Qabristonmap)
+admin.site.register(Qabristonmap_image)

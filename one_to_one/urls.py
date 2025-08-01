@@ -10,7 +10,7 @@ urlpatterns = [
     path('upload/', views.upload_image, name='upload_image'),
     path('images/', views.image_list, name='image_list'), 
 
-    path('qabristonmap/', views.qabristonmap_view, name='qabristonmap'),
+
        
     
 ]
