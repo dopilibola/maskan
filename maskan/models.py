@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
+from django.core.validators import RegexValidator
+
 
 # Profile modelini to'g'rilaymiz
 class Profile(models.Model):
@@ -52,7 +54,11 @@ class Category(models.Model):
     def __str__(self):
         return self.name
     
-# models.py
+    class Meta:
+        verbose_name = "Tuman Shahar"
+        verbose_name_plural = "Tumanlar Shaharlar"
+
+
 class Product(models.Model):
     name = models.CharField(max_length=100)
     location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True)
@@ -72,7 +78,25 @@ class ProductImage(models.Model):
 
 
 
+only_year_validator = RegexValidator(
+    regex=r'^\d{4}$',
+    message='Faqat 4 xonali yil kiriting, masalan: 1990 yoki 2023'
+)
 
+from django.db import models
+from django.core.validators import RegexValidator
+
+only_year_validator = RegexValidator(
+    regex=r'^\d{4}$',
+    message='Faqat 4 xonali yil kiriting, masalan: 1990 yoki 2023'
+)
+
+
+
+only_year_validator = RegexValidator(
+    regex=r'^\d{4}$',
+    message='Faqat 4 xonali yil kiriting, masalan: 1990 yoki 2023'
+)
 
 class Qabristonmap(models.Model):
     STATUS_CHOICES = [
@@ -82,17 +106,132 @@ class Qabristonmap(models.Model):
     ]
 
     ism_familiyasi_marhum = models.CharField(max_length=20, blank=True)
-    years_old = models.CharField(max_length=20, blank=True)
+    years_old = models.CharField(
+        max_length=4,
+        blank=True,
+        validators=[only_year_validator],
+        verbose_name='Tug‘ilgan yil'
+    )
+    years_new = models.CharField(
+        max_length=4,
+        blank=True,
+        validators=[only_year_validator],
+        verbose_name='Vafot yili'
+    )
     years = models.CharField(max_length=20, blank=True)
-    years_new = models.CharField(max_length=20, blank=True)
     qator = models.CharField(max_length=20, blank=True)
     qabr_soni = models.CharField(max_length=20, blank=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='green')
 
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='qabristonmaps')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='qabristonmaps', verbose_name="Qabriston")
+
+    def save(self, *args, **kwargs):
+        if self.years_old and self.years_new:
+            self.years = f"{self.years_old} - {self.years_new}"
+        else:
+            self.years = ""
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.ism_familiyasi_marhum} ({self.status})"
+
+    class Meta:
+        verbose_name = "Marhum"
+        verbose_name_plural = "Marhumlar"
+
+    STATUS_CHOICES = [
+        ('green', 'Yashil'),
+        ('yellow', 'Sariq'),
+        ('red', 'Qizil'),
+    ]
+
+    ism_familiyasi_marhum = models.CharField(max_length=20, blank=True)
+    years_old = models.CharField(
+        max_length=4, blank=True,
+        validators=[only_year_validator],
+        verbose_name='Tug‘ilgan yil'
+    )
+    years_new = models.CharField(
+        max_length=4, blank=True,
+        validators=[only_year_validator],
+        verbose_name='Vafot yili'
+    )
+    years = models.CharField(max_length=20, blank=True, verbose_name='Yil oraliği')
+    yosh = models.PositiveIntegerField(null=True, blank=True, verbose_name='Yosh')
+    qator = models.CharField(max_length=20, blank=True)
+    qabr_soni = models.CharField(max_length=20, blank=True)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='green')
+
+    product = models.ForeignKey(
+        'Product',
+        on_delete=models.CASCADE,
+        related_name='qabristonmaps',
+        verbose_name="Qabriston"
+    )
+
+    def save(self, *args, **kwargs):
+        if self.years_old and self.years_new:
+            try:
+                old_year = int(self.years_old)
+                new_year = int(self.years_new)
+                self.years = f"{old_year} - {new_year}"
+                self.yosh = (new_year - old_year) + 1 if new_year >= old_year else None
+            except ValueError:
+                self.years = ""
+                self.yosh = None
+        else:
+            self.years = ""
+            self.yosh = None
+
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.ism_familiyasi_marhum} ({self.status})"
+
+    class Meta:
+        verbose_name = "Marhum"
+        verbose_name_plural = "Marhumlar"
+
+    STATUS_CHOICES = [
+        ('green', 'Yashil'),
+        ('yellow', 'Sariq'),
+        ('red', 'Qizil'),
+    ]
+
+    ism_familiyasi_marhum = models.CharField(max_length=20, blank=True)
+    years_old = models.CharField(
+        max_length=4,
+        blank=True,
+        validators=[only_year_validator],
+        verbose_name='Tug‘ilgan yil'
+    )
+    years_new = models.CharField(
+        max_length=4,
+        blank=True,
+        validators=[only_year_validator],
+        verbose_name='Vafot yili'
+    )
+    years = models.CharField(max_length=20, blank=True)
+    qator = models.CharField(max_length=20, blank=True)
+    qabr_soni = models.CharField(max_length=20, blank=True)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='green')
+
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='qabristonmaps', verbose_name="Qabriston")
+
+    def save(self, *args, **kwargs):
+        if self.years_old and self.years_new:
+            self.years = f"{self.years_old} - {self.years_new}"
+        else:
+            self.years = ""
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.ism_familiyasi_marhum} ({self.status})"
+
+    class Meta:
+        verbose_name = "Marhum"
+        verbose_name_plural = "Marhumlar"
+
 
 
 class Qabristonmap_image(models.Model):

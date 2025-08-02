@@ -19,6 +19,23 @@ class ProductAdmin(admin.ModelAdmin):
 admin.site.register(Product, ProductAdmin)
 admin.site.register(ProductImage)
 admin.site.register(Location)
-
-admin.site.register(Qabristonmap)
 admin.site.register(Qabristonmap_image)
+
+class QabristonmapAdmin(admin.ModelAdmin):
+    list_display = (
+        'ism_familiyasi_marhum',
+        'years_old',
+        'years',
+        'years_new',
+        'qator',
+        'qabr_soni',
+        'status',
+        'product',
+    )
+    list_filter = ('status', 'product')
+    search_fields = ('ism_familiyasi_marhum', 'qator', 'qabr_soni')
+
+admin.site.register(Qabristonmap, QabristonmapAdmin)
+
+
+    
