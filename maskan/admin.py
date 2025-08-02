@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Product, Category, ProductImage, Location, Qabristonmap, Qabristonmap_image
-
+from django.utils.html import format_html
 
 
 admin.site.register(Category)
@@ -19,7 +19,7 @@ class ProductAdmin(admin.ModelAdmin):
 admin.site.register(Product, ProductAdmin)
 admin.site.register(ProductImage)
 admin.site.register(Location)
-admin.site.register(Qabristonmap_image)
+
 
 class QabristonmapAdmin(admin.ModelAdmin):
     list_display = (
@@ -38,4 +38,24 @@ class QabristonmapAdmin(admin.ModelAdmin):
 admin.site.register(Qabristonmap, QabristonmapAdmin)
 
 
-    
+
+class Qabristonmap_imageAdmin(admin.ModelAdmin):
+    list_display = ('image_preview', 'product_name', 'cemetery_name', 'uploaded_at')
+    readonly_fields = ('image_preview',)
+
+    def image_preview(self, obj):
+        if obj.image:
+            return format_html('<img src="{}" width="100" height="100" style="object-fit: cover;" />', obj.image.url)
+        return "Rasm yo'q"
+    image_preview.short_description = "Rasm"
+
+    def product_name(self, obj):
+        return obj.product.ism_familiyasi_marhum
+    product_name.short_description = "Marhum Ismi"
+
+    def cemetery_name(self, obj):
+        return obj.product.product.name if obj.product.product else "Nomaʼlum qabriston"
+    cemetery_name.short_description = "Qabriston nomi"
+
+admin.site.register(Qabristonmap_image, Qabristonmap_imageAdmin)
+

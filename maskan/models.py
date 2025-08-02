@@ -242,3 +242,6 @@ class Qabristonmap_image(models.Model):
     def __str__(self):
         return f"{self.product.ism_familiyasi_marhum} image"
  
+    class Meta:
+        verbose_name = "qabrnig rasmi"
+        verbose_name_plural = "Qabrning rasmlari"
