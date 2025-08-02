@@ -6,7 +6,6 @@ from .models import Profile, Product, Category, Qabristonmap
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
 from django.http import JsonResponse
-from .models import Cemeterys, Grave
 from django.shortcuts import get_object_or_404
 from collections import defaultdict, OrderedDict
 from django.db.models import Q
@@ -265,8 +264,9 @@ def qabristonmap_search_ajax(request, pk):
     results = Qabristonmap.objects.filter(
         product__id=pk
     ).filter(
+    
         Q(ism_familiyasi_marhum__icontains=query) |
         Q(years__icontains=query) |
         Q(years_old__icontains=query)
-    ).values('id', 'ism_familiyasi_marhum', 'years', 'qator', 'qabr_soni', 'product__name')
+    ).values('id', 'ism_familiyasi_marhum', 'years', 'qator', 'qabr_soni', 'product')
     return JsonResponse(list(results), safe=False)

@@ -33,28 +33,6 @@ post_save.connect(create_profile, sender=User)
 
 # vil tuman shahar 
 
-class Cemeterys(models.Model):
-    name = models.CharField(max_length=255)
-    location = models.CharField(max_length=255)
-    description = models.TextField()
-    image = models.URLField()
-    total_graves = models.PositiveIntegerField()
-    established = models.CharField(max_length=10)
-
-    def __str__(self):
-        return self.name
-
-
-class Grave(models.Model):
-    cemetery = models.ForeignKey(Cemeterys, on_delete=models.CASCADE, related_name='graves')
-    row = models.CharField(max_length=1)  # A, B, C...
-    column = models.IntegerField()
-    is_occupied = models.BooleanField(default=False)
-
-    def __str__(self):
-        return f"{self.row}{self.column} - {self.cemetery.name}"
-
-
 
 class Location(models.Model):
     name = models.CharField(max_length=255)
@@ -66,16 +44,6 @@ class Location(models.Model):
         return self.name
 
         
-class Person(models.Model):
-    grave = models.OneToOneField(Grave, on_delete=models.CASCADE, related_name='person')
-    name = models.CharField(max_length=255)
-    birth_date = models.DateField()
-    death_date = models.DateField()
-    description = models.TextField()
-    image = models.URLField()
-
-    def __str__(self):
-        return self.name
 
 
 class Category(models.Model):
