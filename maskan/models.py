@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.core.validators import RegexValidator
-
+from django.utils.html import format_html
 
 # Profile modelini to'g'rilaymiz
 class Profile(models.Model):
@@ -59,24 +59,83 @@ class Category(models.Model):
         verbose_name_plural = "Tumanlar Shaharlar"
 
 
-class Product(models.Model):
+class Location(models.Model):
     name = models.CharField(max_length=100)
-    location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    description = models.CharField(max_length=50000, default='')
+    latitude = models.FloatField()
+    longitude = models.FloatField()
 
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = "Lokatsiya"
+        verbose_name_plural = "Lokatsiyalar"
+
+
+class Category(models.Model):  # Tuman/Shahar
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Tuman/Shahar"
+        verbose_name_plural = "Tuman/Shaharlar"
+
+
+class Product(models.Model):  # Qabriston
+    name = models.CharField("Qabriston nomi", max_length=100)
+    location = models.ForeignKey(
+        Location,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="Lokatsiya"
+    )
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.CASCADE,
+        verbose_name="Tuman/Shahar"
+    )
+    description = models.TextField("Izoh", blank=True, default='')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Qabriston"
+        verbose_name_plural = "Qabristonlar"
+
+
+
 class ProductImage(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='uploads/products/')
+    product = models.ForeignKey(
+        'Product',
+        on_delete=models.CASCADE,
+        related_name='images',
+        verbose_name="Qabriston"
+    )
+    image = models.ImageField("Rasm", upload_to='uploads/products/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
-    def __sr__(self):
-        return f"{self.product.name} image"
+    def __str__(self):
+        return f"{self.product.name} rasmi"
+
+    def image_preview(self):
+        if self.image:
+            return format_html('<a href="{}" target="_blank"><img src="{}" width="100" /></a>', self.image.url, self.image.url)
+        return "Rasm mavjud emas"
+
+    image_preview.short_description = "Ko‘rinish"
+
+    class Meta:
+        verbose_name = "Qabriston rasmi"
+        verbose_name_plural = "Qabriston rasmlari"
 
 
+
+
+        
 
 only_year_validator = RegexValidator(
     regex=r'^\d{4}$',

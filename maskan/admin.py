@@ -13,11 +13,8 @@ class ProductImageInline(admin.TabularInline):
     min_num = 1
     max_num = 10  # Maksimal 10 ta rasm
 
-class ProductAdmin(admin.ModelAdmin):
-    inlines = [ProductImageInline]
 
-admin.site.register(Product, ProductAdmin)
-admin.site.register(ProductImage)
+
 admin.site.register(Location)
 
 
@@ -58,4 +55,27 @@ class Qabristonmap_imageAdmin(admin.ModelAdmin):
     cemetery_name.short_description = "Qabriston nomi"
 
 admin.site.register(Qabristonmap_image, Qabristonmap_imageAdmin)
+
+
+
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ('name', 'location_link', 'category')
+    search_fields = ('name', 'category__name')
+    list_filter = ('category',)
+
+    def location_link(self, obj):
+        if obj.location:
+            return format_html(
+                '<a href="https://www.google.com/maps/search/?api=1&query={},{}" target="_blank">{}</a>',
+                obj.location.latitude, obj.location.longitude, obj.location.name
+            )
+        return "-"
+    location_link.short_description = "Lokatsiya (Google Maps)"
+
+admin.site.register(Product, ProductAdmin)
+
+@admin.register(ProductImage)
+class ProductImageAdmin(admin.ModelAdmin):
+    list_display = ('product', 'image_preview', 'uploaded_at')
+    readonly_fields = ('image_preview',)
 
