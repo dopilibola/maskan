@@ -67,6 +67,7 @@
                             <strong>{{ qabr.ism_familiyasi_marhum }}</strong><br>
                             Yil: {{ qabr.years }}<br>
                             Qator: {{ qabr.qator }}, Qabr: {{ qabr.qabr_soni }}<br>
+                            Qabriston: {{ qabr.product.name }}<br>
                             Holati: <span class="text-capitalize">{{ qabr.status }}</span><br>
                             <a href="{% url 'qabristonmap' qabr.product.pk %}" class="btn btn-link btn-sm p-0">View in map</a>
                         </div>

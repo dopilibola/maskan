@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Qabriston Xarita</title>
+
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -132,6 +133,7 @@
 
   <h2>Qabriston Xarita</h2>
 
+<a class="nav-link" href="{% url 'qabristonmap_search' pk=product.id %}">Qabriston Qidirish</a>
 
 
   <div id="grave-container">
@@ -163,6 +165,7 @@
             <div><strong>Vafot:</strong><br>{{ qabr.years_old }}</div>
             <div><strong>Qator:</strong><br>{{ qabr.qator }}</div>
             <div><strong>Qabr #:</strong><br>{{ qabr.qabr_soni }}</div>
+            <div><strong>Qabriston:</strong><br>{{ product }}</div>
           </div>
 
           {% for img in qabr.images.all %}

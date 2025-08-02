@@ -253,3 +253,20 @@ def home(request):
         'products': products,
         'is_qabriston_egasi': is_qabriston_egasi
     })
+
+
+def qabristonmap_search_page(request, pk):
+    # HTML sahifa ochish uchun view
+    return render(request, 'search.html', {'pk': pk})
+
+def qabristonmap_search_ajax(request, pk):
+    # JSON qidiruv uchun view
+    query = request.GET.get('query', '')
+    results = Qabristonmap.objects.filter(
+        product__id=pk
+    ).filter(
+        Q(ism_familiyasi_marhum__icontains=query) |
+        Q(years__icontains=query) |
+        Q(years_old__icontains=query)
+    ).values('id', 'ism_familiyasi_marhum', 'years', 'qator', 'qabr_soni', 'product__name')
+    return JsonResponse(list(results), safe=False)

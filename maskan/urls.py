@@ -21,6 +21,8 @@ urlpatterns = [
     path('category/<str:foo>', views.category, name='category' ),
 
     path('qabristonmap/<int:pk>/', views.qabristonmap_view, name='qabristonmap'),
+    path('qabristonmap/<int:pk>/search/', views.qabristonmap_search_page, name='qabristonmap_search'),
+    path('qabristonmap/<int:pk>/search/ajax/', views.qabristonmap_search_ajax, name='qabristonmap_search_ajax'),
 ]
 
 # if settings.DEBUG:
