@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Product, Category, ProductImage, Location, Qabristonmap, Qabristonmap_image
+from .models import Product, Category, ProductImage, Location, Qabristonmap, Qabristonmap_image, UserAccess
 from django.utils.html import format_html
 
 
@@ -18,21 +18,24 @@ class ProductImageInline(admin.TabularInline):
 admin.site.register(Location)
 
 
+
 class QabristonmapAdmin(admin.ModelAdmin):
     list_display = (
-        'ism_familiyasi_marhum',
-        'years_old',
-        'years',
-        'years_new',
-        'qator',
-        'qabr_soni',
-        'status',
-        'product',
+        'ism_familiyasi_marhum', 'years_old', 'years', 'years_new',
+        'qator', 'qabr_soni', 'status', 'product'
     )
     list_filter = ('status', 'product')
     search_fields = ('ism_familiyasi_marhum', 'qator', 'qabr_soni')
 
-admin.site.register(Qabristonmap, QabristonmapAdmin)
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        try:
+            access = UserAccess.objects.get(user=request.user)
+            return qs.filter(product__category__in=access.categories.all())
+        except UserAccess.DoesNotExist:
+            return qs.none()
 
 
 
@@ -57,11 +60,21 @@ class Qabristonmap_imageAdmin(admin.ModelAdmin):
 admin.site.register(Qabristonmap_image, Qabristonmap_imageAdmin)
 
 
-
+@admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('name', 'location_link', 'category')
     search_fields = ('name', 'category__name')
     list_filter = ('category',)
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        try:
+            access = UserAccess.objects.get(user=request.user)
+            return qs.filter(category__in=access.categories.all())
+        except UserAccess.DoesNotExist:
+            return qs.none()
 
     def location_link(self, obj):
         if obj.location:
@@ -72,10 +85,20 @@ class ProductAdmin(admin.ModelAdmin):
         return "-"
     location_link.short_description = "Lokatsiya (Google Maps)"
 
-admin.site.register(Product, ProductAdmin)
+
+
+# admin.site.register(Product, ProductAdmin)
+
+
+
 
 @admin.register(ProductImage)
 class ProductImageAdmin(admin.ModelAdmin):
     list_display = ('product', 'image_preview', 'uploaded_at')
     readonly_fields = ('image_preview',)
 
+
+@admin.register(UserAccess)
+class UserAccessAdmin(admin.ModelAdmin):
+    list_display = ('user',)
+    filter_horizontal = ('categories',)

@@ -36,16 +36,7 @@ post_save.connect(create_profile, sender=User)
 # vil tuman shahar 
 
 
-class Location(models.Model):
-    name = models.CharField(max_length=255)
-    address = models.TextField(blank=True, null=True)
-    latitude = models.DecimalField(max_digits=9, decimal_places=6)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6)
 
-    def __str__(self):
-        return self.name
-
-        
 
 
 class Category(models.Model):
@@ -72,15 +63,6 @@ class Location(models.Model):
         verbose_name_plural = "Lokatsiyalar"
 
 
-class Category(models.Model):  # Tuman/Shahar
-    name = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = "Tuman/Shahar"
-        verbose_name_plural = "Tuman/Shaharlar"
 
 
 class Product(models.Model):  # Qabriston
@@ -142,8 +124,6 @@ only_year_validator = RegexValidator(
     message='Faqat 4 xonali yil kiriting, masalan: 1990 yoki 2023'
 )
 
-from django.db import models
-from django.core.validators import RegexValidator
 
 only_year_validator = RegexValidator(
     regex=r'^\d{4}$',
@@ -304,3 +284,11 @@ class Qabristonmap_image(models.Model):
     class Meta:
         verbose_name = "qabrnig rasmi"
         verbose_name_plural = "Qabrning rasmlari"
+
+    
+class UserAccess(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    categories = models.ManyToManyField(Category)
+
+    def __str__(self):
+        return self.user.username
