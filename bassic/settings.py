@@ -110,6 +110,13 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
+        {
+        'NAME': 'yourapp.validators.validate_password_length',
+    },
+    {
+        'NAME': 'yourapp.validators.validate_password_not_numeric',
+    },
+    
 ]
 
 
@@ -117,6 +124,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
+# LANGUAGE_CODE = 'uz'
 
 TIME_ZONE = 'UTC'
 

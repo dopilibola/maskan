@@ -2,61 +2,87 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, SetPasswordForm
 from django import forms
 from .models import Profile
+from .validators import validate_password_length, validate_password_not_numeric
 
+# Ro'yxatdan o'tish formasi
 class SignUpForm(UserCreationForm):
-	email = forms.EmailField(label="", widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Email Address'}))
-	first_name = forms.CharField(label="", max_length=100, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'First Name'}))
-	last_name = forms.CharField(label="", max_length=100, widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Last Name'}))
+    email = forms.EmailField(
+        label="", 
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Email manzilingiz'})
+    )
+    first_name = forms.CharField(
+        label="", 
+        max_length=100, 
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ismingiz'})
+    )
+    last_name = forms.CharField(
+        label="", 
+        max_length=100, 
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Familiyangiz'})
+    )
 
-	class Meta:
-		model = User
-		fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2')
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2')
 
-	def __init__(self, *args, **kwargs):
-		super(SignUpForm, self).__init__(*args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super(SignUpForm, self).__init__(*args, **kwargs)
 
-		self.fields['username'].widget.attrs['class'] = 'form-control'
-		self.fields['username'].widget.attrs['placeholder'] = 'User Name'
-		self.fields['username'].label = ''
-		self.fields['username'].help_text = '<span class="form-text text-muted"><small>Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.</small></span>'
+        # Foydalanuvchi nomi maydoni sozlamalari
+        self.fields['username'].widget.attrs['class'] = 'form-control'
+        self.fields['username'].widget.attrs['placeholder'] = 'Foydalanuvchi nomi'
+        self.fields['username'].label = ''
+        self.fields['username'].help_text = '<span class="form-text text-muted small">Majburiy. 150 tagacha belgi. Harflar, raqamlar va @/./+/-/_.</span>'
 
-		self.fields['password1'].widget.attrs['class'] = 'form-control'
-		self.fields['password1'].widget.attrs['placeholder'] = 'Password'
-		self.fields['password1'].label = ''
-		self.fields['password1'].help_text = '<ul class="form-text text-muted small"><li>Your password can\'t be too similar to your other personal information.</li><li>Your password must contain at least 8 characters.</li><li>Your password can\'t be a commonly used password.</li><li>Your password can\'t be entirely numeric.</li></ul>'
+        # Parol maydoni (1) — validatsiya va ko‘rinish
+        self.fields['password1'].widget.attrs['class'] = 'form-control'
+        self.fields['password1'].widget.attrs['placeholder'] = 'Parol'
+        self.fields['password1'].label = ''
+        self.fields['password1'].validators = [validate_password_length, validate_password_not_numeric]
+        self.fields['password1'].help_text = """<ul class="form-text text-muted small">
+            <li>Parolingiz boshqa shaxsiy ma'lumotlarga juda o‘xshamasligi kerak.</li>
+            <li>Parol kamida 8 ta belgidan iborat bo'lishi kerak.</li>
+            <li>Parol juda keng tarqalgan bo'lmasligi kerak.</li>
+            <li>Parol faqat raqamlardan iborat bo'lmasligi kerak.</li>
+        </ul>"""
 
-		self.fields['password2'].widget.attrs['class'] = 'form-control'
-		self.fields['password2'].widget.attrs['placeholder'] = 'Confirm Password'
-		self.fields['password2'].label = ''
-		self.fields['password2'].help_text = '<span class="form-text text-muted"><small>Enter the same password as before, for verification.</small></span>'
+        # Parolni tasdiqlash maydoni
+        self.fields['password2'].widget.attrs['class'] = 'form-control'
+        self.fields['password2'].widget.attrs['placeholder'] = 'Parolni tasdiqlang'
+        self.fields['password2'].label = ''
+        self.fields['password2'].help_text = '<span class="form-text text-muted small">Parolni qayta kiriting.</span>'
 
 
-
+# Parolni yangilash formasi
 class ChangePasswordForm(SetPasswordForm):
-	class Meta:
-		model = User
-		fields = ['new_password1', 'new_password2' ]
+    class Meta:
+        model = User
+        fields = ['new_password1', 'new_password2']
 
-	def __init__(self, *args, **kwargs):
-		super(ChangePasswordForm, self).__init__(*args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super(ChangePasswordForm, self).__init__(*args, **kwargs)
 
-		self.fields['new_password1'].widget.attrs['class'] = 'form-control'
-		self.fields['new_password1'].widget.attrs['placeholder'] = 'Password'
-		self.fields['new_password1'].label = ''
-		self.fields['new_password1'].help_text = '<ul class="form-text text-muted small"><li>Your password can\'t be too similar to your other personal information.</li><li>Your password must contain at least 8 characters.</li><li>Your password can\'t be a commonly used password.</li><li>Your password can\'t be entirely numeric.</li></ul>'
+        # Yangi parol maydoni
+        self.fields['new_password1'].widget.attrs['class'] = 'form-control'
+        self.fields['new_password1'].widget.attrs['placeholder'] = 'Yangi parol'
+        self.fields['new_password1'].label = ''
+        self.fields['new_password1'].validators = [validate_password_length, validate_password_not_numeric]
+        self.fields['new_password1'].help_text = """<ul class="form-text text-muted small">
+            <li>Parolingiz boshqa shaxsiy ma'lumotlarga juda o‘xshamasligi kerak.</li>
+            <li>Parol kamida 8 ta belgidan iborat bo'lishi kerak.</li>
+            <li>Parol juda keng tarqalgan bo'lmasligi kerak.</li>
+            <li>Parol faqat raqamlardan iborat bo'lmasligi kerak.</li>
+        </ul>"""
 
-		self.fields['new_password2'].widget.attrs['class'] = 'form-control'
-		self.fields['new_password2'].widget.attrs['placeholder'] = 'Confirm Password'
-		self.fields['new_password2'].label = ''
-		self.fields['new_password2'].help_text = '<span class="form-text text-muted"><small>Enter the same password as before, for verification.</small></span>'
+        # Parolni qayta kiriting maydoni
+        self.fields['new_password2'].widget.attrs['class'] = 'form-control'
+        self.fields['new_password2'].widget.attrs['placeholder'] = 'Parolni tasdiqlang'
+        self.fields['new_password2'].label = ''
+        self.fields['new_password2'].help_text = '<span class="form-text text-muted small">Parolni qayta kiriting.</span>'
 
 
-# profile  
+# Profilni tahrirlash formasi
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['full_name', 'job', 'image']
-
-# maskan/forms.py
-
-# maskan/forms.py
