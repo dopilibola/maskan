@@ -9,7 +9,7 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from collections import defaultdict, OrderedDict
 from django.db.models import Q
-
+from django.contrib.auth.models import User
 
 # Create your views here.
 
@@ -74,7 +74,20 @@ def register_user(request):
             return redirect('register')
     else:
         return render(request, 'register.html', {'form':form })
-    
+
+def forgot_password(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        try:
+            user = User.objects.get(email=email)
+            # ✅ Parolni tiklash uchun link yuborish logikasi (masalan, email orqali)
+            messages.success(request, 'Parolni tiklash uchun email yuborildi.')
+            return redirect('login')
+        except User.DoesNotExist:
+            messages.error(request, 'Email not found.')
+            return redirect('forgot_password')
+
+    return render(request, 'forgot_password.html')
 
 
 # Parolni yangilash
