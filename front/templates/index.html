@@ -30,11 +30,11 @@
         <ul class="nav-menu">
             <li><a href="#home">Bosh sahifa</a></li>
             <li><a href="#how-it-works">Biz qanday ishlaymiz</a></li>
-            <li><a href="#pricing">Narxlar</a></li>
+            {% comment %} <li><a href="#pricing">Narxlar</a></li> {% endcomment %}
             <li><a href="#testimonials">Mijozlar fikrlari</a></li>
             <li><a href="#contact">Aloqa</a></li>
 
-            <li><a href="{% url 'login2'%}">Login</a></li>
+            <li><a href="{% url 'login2'%}">Kirish</a></li>
         </ul>
         <div class="hamburger">
             <span></span><span></span><span></span>
@@ -46,13 +46,27 @@
 <section id="home" class="hero" style="background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('{% static "assets/hero-cemetery.jpg" %}') no-repeat center/cover;">
     <div class="hero-content">
         <h1 class="fade-in-up"></h1>
-        <p class="fade-in-up stagger-1">Maskan - Muslim qabristonlari uchun raqamli parvarish xizmatlari.</p>
+        <p class="fade-in-up stagger-1">Maskan – Qabr tozalash, fotosuratlar bilan hisobot berish va arxivlash xizmatlarini bir joyda birlashtirgan raqamli platforma</p>
         <div class="hero-buttons fade-in-up stagger-2">
-            <button class="btn-primary">Buyurtma berish</button>
-            <button class="btn-secondary">Batafsil ma'lumot</button>
+            <button class="btn-primary" id="scrollToContact">Buyurtma berish</button>
+            <button class="btn-secondary" onclick="document.getElementById('how-it-works').scrollIntoView({ behavior: 'smooth' });">
+                Batafsil ma'lumot
+            </button>
+
         </div>
     </div>
 </section>
+
+<script>
+document.getElementById('scrollToContact').addEventListener('click', function () {
+    const contactSection = document.getElementById('contact');
+    if (contactSection) {
+        contactSection.scrollIntoView({ behavior: 'smooth' });
+    }
+});
+</script>
+
+
 
 <!-- How It Works Section -->
 <section id="how-it-works" class="section">
@@ -63,22 +77,22 @@
         </div>
         <div class="steps-grid">
             <div class="step-card">
-                <div class="step-icon">📥</div>
+                <div class="step-icon">📝</div> <!-- oldingi 📥 -->
                 <h3>Qabr Ma'lumotlarini Taqdim Etish</h3>
                 <p>Qabr joylashuvi va tafsilotlarini bizning xavfsiz platformamiz orqali taqdim eting.</p>
             </div>
             <div class="step-card">
-                <div class="step-icon">🧹</div>
+                <div class="step-icon">🧹</div> <!-- oldingi 🧼 -->
                 <h3>Professional Tozalash</h3>
                 <p>Bizning malakali jamoamiz qabr joyini hurmat bilan tozalaydi va parvarish qiladi.</p>
             </div>
             <div class="step-card">
-                <div class="step-icon">📸</div>
+                <div class="step-icon">📷</div> <!-- oldingi 📸 -->
                 <h3>Foto Hisobot</h3>
                 <p>O'tkazilgan parvarish ishlarini ko'rsatadigan batafsil fotosuratlarni oling.</p>
             </div>
             <div class="step-card">
-                <div class="step-icon">🗂️</div>
+                <div class="step-icon">🗃️</div> <!-- oldingi 🗂️ -->
                 <h3>Raqamli Arxiv</h3>
                 <p>Sizning qabr joyingiz kelajakda murojaat qilish va kuzatish uchun raqamli ravishda qayd etiladi.</p>
             </div>
@@ -91,28 +105,29 @@
     <div class="container">
         <div class="stats-grid">
             <div class="stat-item">
-                <div class="stat-icon">📍</div>
+                <div class="stat-icon">🕌</div> <!-- Qabristonlar uchun mosroq -->
                 <div class="stat-number">109+</div>
                 <p>Qabristonlar xizmat ko'rsatildi</p>
             </div>
             <div class="stat-item">
-                <div class="stat-icon">✨</div>
+                <div class="stat-icon">🧹</div> <!-- Tozalashga mos -->
                 <div class="stat-number">120+</div>
                 <p>Qabr tozalandi</p>
             </div>
             <div class="stat-item">
-                <div class="stat-icon">💛</div>
+                <div class="stat-icon">🤝</div> <!-- Mijozlar, ishonch belgisi -->
                 <div class="stat-number">80+</div>
                 <p>Qoniqarli Mijozlar</p>
             </div>
             <div class="stat-item">
-                <div class="stat-icon">📅</div>
+                <div class="stat-icon">🗓️</div> <!-- Obuna/oylik xizmatga mos -->
                 <div class="stat-number">70+</div>
                 <p>Oylik Obunachilar</p>
             </div>
         </div>
     </div>
 </section>
+
 
 <!-- Testimonials -->
 <section id="testimonials" class="section">
@@ -133,7 +148,7 @@
                 <p>"Ularning ishi va musulmon an'analariga hurmat bilan yondashuvi meni hayratda qoldirdi. Jamoa ishonchli va ularning ishlari a'lo darajada."</p>
                 <div class="testimonial-author">
                     <div class="author-avatar">F.Z</div>
-                    <span>Fatima Zikirova</span>
+                    <span>Fatima Yusufxojayeva</span>
                 </div>
             </div>
             <div class="testimonial-card">
@@ -148,7 +163,7 @@
 </section>
 
 <!-- Pricing -->
-<section id="pricing" class="pricing-section">
+{% comment %} <section id="pricing" class="pricing-section">
     <div class="container">
         <div class="section-header">
             <h2>Rejangizni Tanlang</h2>
@@ -188,8 +203,7 @@
             </div>
         </div>
     </div>
-</section>
-
+</section> {% endcomment %}
 <!-- Contact -->
 <section id="contact" class="section">
     <div class="container">
@@ -198,6 +212,12 @@
                 <h2>Biz bilan bog'laning</h2>
                 <p>Boshlashga tayyormisiz? Biz bilan maslahatlashish uchun bog'laning</p>
             </div>
+
+            <!-- ✅ Xabar muvaffaqiyatli yuborilganda ko‘rinadigan blok -->
+            <div id="successMessage" class="alert alert-success" style="display: none;">
+                ✅ Xabaringiz muvaffaqiyatli yuborildi!
+            </div>
+
             <div class="contact-form-container">
                 <form id="contactForm" class="contact-form">
                     <div class="form-group">
@@ -215,19 +235,79 @@
     </div>
 </section>
 
+<!-- ✅ JS: So‘rov yuborish va xabar ko‘rsatish -->
+<script>
+document.getElementById('contactForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const form = e.target;
+    const formData = new FormData(form);
+    const successBox = document.getElementById('successMessage');
+
+    fetch("{% url 'contact' %}", {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.ok) {
+            successBox.style.display = 'block';
+            form.reset();
+
+            // 5 soniyadan so‘ng avtomatik yashirinadi
+            setTimeout(() => {
+                successBox.style.display = 'none';
+            }, 5000);
+        } else {
+            alert("Xatolik: " + (data.error || data.message));
+        }
+    })
+    .catch(error => {
+        alert("Server bilan bog‘lanishda xatolik yuz berdi.");
+        console.error(error);
+    });
+});
+</script>
+
+<!-- ✅ CSS (agar Bootstrap yo‘q bo‘lsa, bu alert uslubi ishlaydi) -->
+<style>
+.alert {
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+    font-weight: bold;
+    font-size: 16px;
+    animation: fadeIn 0.5s ease-in-out;
+}
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+
+
 <!-- Footer -->
 <footer class="footer">
     <div class="container">
         <div class="footer-content">
             <div class="footer-section">
                 <h3>Maskan</h3>
-                <p>Musulmon qabristonlarini hurmat bilan saqlashga bag'ishlangan ishonchli platforma. O'zbekiston bo'ylab oilalarga xizmat ko'rsatamiz.</p>
+                <p>Ishonchli qo‘llab-quvvatlovchi tizim: biz musulmon qabrlarini hurmat bilan asraymiz va O‘zbekiston bo‘ylab oilalarga yodgorlikni saqlashda yordam beramiz..</p>
             </div>
             <div class="footer-section">
                 <h4>Tezkor Havolalar</h4>
                 <ul>
                     <li><a href="#how-it-works">Qanday ishlaydi</a></li>
-                    <li><a href="#pricing">Narxlar</a></li>
+                    {% comment %} <li><a href="#pricing">Narxlar</a></li> {% endcomment %}
                     <li><a href="#testimonials">Mijozlar fikri</a></li>
                     <li><a href="#contact">Aloqa</a></li>
                 </ul>
@@ -235,8 +315,8 @@
             <div class="footer-section">
                 <h4>Aloqa Ma'lumotlari</h4>
                 <div class="contact-info">
-                    <div><span>📧</span> info@maskan.uz</div>
-                    <div><span>📞</span> +998 (90) 123-45-67</div>
+                    <div><span>📧</span> ochilovkomronbek809@gmail.com</div>
+                    <div><span>📞</span> +998 (94) 977-47-81</div>
                 </div>
             </div>
         </div>

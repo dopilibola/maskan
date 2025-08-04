@@ -18,18 +18,19 @@
                 <h1 class="hero-title">Qabristonni raqamlashtirish tizimi</h1>
                 <p class="hero-subtitle">Xotiralarni saqlang, avlodlarni bog'lang</p>
 
-                <div class="action-buttons">
-                    <button class="btn-primary-custom user-btn" onclick="showCemeteryModal()">
+                    <button class="btn-primary-custom user-btn" onclick="window.location.href='{% url 'login' %}'">
                         <i class="bi bi-person-fill"></i>
-                        <span>   Kirish</span>
+                        <span> Kirish</span>
                         <div class="btn-ripple"></div>
                     </button>
 
-                    <button class="btn-secondary-custom cemetery-btn" onclick="window.location.href='{% url 'login' %}'">
+
+                    <button class="btn-secondary-custom cemetery-btn" onclick="window.location.href='/admin/'">
                         <i class="bi bi-building-fill"></i>
                         <span>Xodimlar uchun kirish</span>
                         <div class="btn-ripple"></div>
                     </button>
+
 
                    
 
@@ -53,113 +54,11 @@
                 </button>
             </div>
             
-            <div class="modal-body">
-                <!-- Tab Navigation -->
-                <div class="tab-navigation">
-                    <button class="tab-btn active" data-tab="login" onclick="switchTab('login')">
-                        Login
-                    </button>
-                    <button class="tab-btn" data-tab="register" onclick="switchTab('register')">
-                        Register
-                    </button>
-                    <div class="tab-indicator"></div>
-                </div>
 
-                <!-- Login Form -->
-                <div class="tab-content active" id="loginTab">
-                    <form class="auth-form" id="loginForm">
-                        <div class="form-group">
-                            <div class="input-container">
-                                <input type="tel" id="loginPhone" required>
-                                <label for="loginPhone">Login</label>
-                                <i class="bi bi-telephone-fill input-icon"></i>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="input-container">
-                                <input type="password" id="loginPassword" required>
-                                <label for="loginPassword">Password</label>
-                                <i class="bi bi-lock-fill input-icon"></i>
-                                <button type="button" class="toggle-password" onclick="togglePassword('loginPassword')">
-                                    <i class="bi bi-eye-fill"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="form-options">
-                            <div class="checkbox-group">
-                                <input type="checkbox" id="rememberMe">
-                                <label for="rememberMe">Remember me</label>
-                            </div>
-                            <a href="#" class="forgot-password">Forgot password?</a>
-                        </div>
-
-                        <button type="submit" class="submit-btn">
-                            <span>Login</span>
-                            <i class="bi bi-arrow-right"></i>
-                        </button>
-                    </form>
-                </div>
-
-                <!-- Register Form -->
-                <div class="tab-content" id="registerTab">
-                    <form class="auth-form" id="registerForm">
-                        <div class="form-group">
-                            <div class="input-container">
-                                <input type="text" id="registerName" required>
-                                <label for="registerName">Cemetery Name</label>
-                                <i class="bi bi-building input-icon"></i>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="input-container">
-                                <input type="tel" id="registerPhone" required>
-                                <label for="registerPhone">Phone Number</label>
-                                <i class="bi bi-telephone-fill input-icon"></i>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="input-container">
-                                <input type="password" id="registerPassword" required>
-                                <label for="registerPassword">Password</label>
-                                <i class="bi bi-lock-fill input-icon"></i>
-                                <button type="button" class="toggle-password" onclick="togglePassword('registerPassword')">
-                                    <i class="bi bi-eye-fill"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="input-container">
-                                <input type="password" id="confirmPassword" required>
-                                <label for="confirmPassword">Confirm Password</label>
-                                <i class="bi bi-lock-fill input-icon"></i>
-                                <button type="button" class="toggle-password" onclick="togglePassword('confirmPassword')">
-                                    <i class="bi bi-eye-fill"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="submit-btn">
-                            <span>Register</span>
-                            <i class="bi bi-arrow-right"></i>
-                        </button>
-                    </form>
-                </div>
-            </div>
         </div>
     </div>
 
-    <!-- Success/Error Messages -->
-    <div class="message-container" id="messageContainer">
-        <div class="message" id="message">
-            <i class="bi bi-check-circle-fill"></i>
-            <span id="messageText"></span>
-        </div>
-    </div>
+
 
     
 </body>
