@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from .forms import SignUpForm, ChangePasswordForm, ProfileForm
-from .models import Profile, Product, Category, Qabristonmap
+from .models import Profile, Product, Category, Qabristonmap, Location
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
 from django.http import JsonResponse
@@ -226,12 +226,15 @@ def home(request):
                 Q(product__name__icontains=query)
             )
 
+    locations = Location.objects.all()
+
     context = {
         'products': products,
         'is_qabriston_egasi': is_qabriston_egasi,
         'searched_products': searched_products,
         'searched_graves': searched_graves,
-        'query': query
+        'query': query,
+        'locations': locations 
     }
     return render(request, 'home.html', context)
 
