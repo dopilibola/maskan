@@ -155,37 +155,6 @@ def owner_dashboard(request):
 
 
 
-def search(request):
-    if request.method == "POST":
-        query = request.POST['searched']
-        print("Qidirilyapti:", query)
-
-        # Product modelidan qidirish
-        product_results = Product.objects.filter(
-            Q(name__icontains=query) | Q(description__icontains=query)
-        )
-
-        # Qabristonmap modelidan qidirish
-        qabr_results = Qabristonmap.objects.filter(
-            Q(ism_familiyasi_marhum__icontains=query) |
-            Q(years__icontains=query) |
-            Q(years_old__icontains=query) |
-            Q(qator__icontains=query) |
-            Q(qabr_soni__icontains=query)
-        )
-
-        if not product_results and not qabr_results:
-            messages.info(request, "Hech qanday natija topilmadi.")
-
-        return render(request, "search.html", {
-            'query': query,
-            'searched_products': product_results,
-            'searched_graves': qabr_results,
-        })
-
-    return render(request, "search.html", {})
-
-
 
 
 
@@ -240,14 +209,31 @@ def category(request, foo):
 
 def home(request):
     products = Product.objects.all()
+    searched_products = []
+    searched_graves = []
+    query = None
     is_qabriston_egasi = False
+
     if request.user.is_authenticated:
         is_qabriston_egasi = request.user.groups.filter(name='Qabriston Egasi').exists()
 
-    return render(request, 'home.html', {
+    if request.method == "POST":
+        query = request.POST.get("searched", "").strip()
+        if query:
+            searched_products = Product.objects.filter(name__icontains=query)
+            (
+                Q(ism_familiyasi_marhum__icontains=query) |
+                Q(product__name__icontains=query)
+            )
+
+    context = {
         'products': products,
-        'is_qabriston_egasi': is_qabriston_egasi
-    })
+        'is_qabriston_egasi': is_qabriston_egasi,
+        'searched_products': searched_products,
+        'searched_graves': searched_graves,
+        'query': query
+    }
+    return render(request, 'home.html', context)
 
 
 def qabristonmap_search_page(request, pk):

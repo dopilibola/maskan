@@ -3,7 +3,6 @@
 
 {% block content %}
 <style>
-  /* Overall card styling */
   .custom-card {
     border-radius: 1rem;
     transition: transform .3s, box-shadow .3s;
@@ -13,8 +12,6 @@
     transform: translateY(-5px);
     box-shadow: 0 16px 32px rgba(0, 0, 0, .15);
   }
-
-  /* Image styling */
   .custom-img {
     height: 250px;
     object-fit: cover;
@@ -23,78 +20,80 @@
   @media (max-width: 768px) {
     .custom-img { height: 180px; }
   }
-
-  /* List-group item for graves (if used elsewhere) */
-  .grave-item {
-    border-radius: .75rem;
-    transition: background-color .2s;
-  }
-  .grave-item:hover {
-    background-color: #f8f9fa;
-  }
 </style>
 
 <section class="py-5">
   <div class="container">
 
-    <!-- Default Product Grid -->
-    <div class="row gx-4 gy-5 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4">
-      {% for product in products %}
-        <div class="col">
-          <div class="card custom-card h-100 shadow-sm">
-            {% if product.images.all %}
-              <img
-                src="{{ product.images.all.0.image.url }}"
-                class="card-img-top custom-img"
-                data-bs-toggle="modal"
-                data-bs-target="#modal{{ product.id }}"
-                alt="{{ product.name }}">
-            {% else %}
-              <img
-                src="{% static 'default.jpg' %}"
-                class="card-img-top custom-img"
-                data-bs-toggle="modal"
-                data-bs-target="#modal{{ product.id }}"
-                alt="No image">
-            {% endif %}
-
-            <div class="card-body text-center d-flex flex-column">
-              <h5 class="card-title text-uppercase">{{ product.name }}</h5>
-              <p class="mt-auto"><strong>{{ product.price }}</strong></p>
-              <p class="text-muted">{{ product.category }}</p>
-            </div>
-
-            <div class="card-footer bg-white text-center border-0">
-              <a href="{% url 'product' product.id %}" class="btn btn-dark w-75">
-                Qabristoni ko‘rish
-              </a>
-            </div>
+    <!-- Qidiruv formasi -->
+    <div class="row mb-4">
+      <div class="col-md-8 mx-auto">
+        <form method="POST" action="{% url 'home' %}">
+          {% csrf_token %}
+          <div class="input-group">
+            <input type="text" class="form-control form-control-lg" name="searched" placeholder="Qabristonni Qidirish" value="{{ query|default:'' }}">
+            <button type="submit" class="btn btn-dark">Qidirish</button>
           </div>
-        </div>
+        </form>
+      </div>
+    </div>
 
-        <!-- Image Modal -->
-        <div class="modal fade" id="modal{{ product.id }}" tabindex="-1"
-             aria-labelledby="modalLabel{{ product.id }}" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered modal-xl">
-            <div class="modal-content border-0">
-              <div class="modal-body p-0 text-center">
-                {% if product.images.all %}
-                  <img
-                    src="{{ product.images.all.0.image.url }}"
-                    class="img-fluid rounded"
-                    alt="{{ product.name }}">
-                {% else %}
-                  <img
-                    src="{% static 'default.jpg' %}"
-                    class="img-fluid rounded"
-                    alt="No image">
-                {% endif %}
+    <!-- Qidiruv natijalari (agar bor bo‘lsa) -->
+    {% if searched_products %}
+      <h4 class="mb-4">Qidiruv natijalari:</h4>
+      <div class="row gx-4 gy-5 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4">
+        {% for product in searched_products %}
+          <div class="col">
+            <div class="card custom-card h-100 shadow-sm">
+              {% if product.images.all %}
+                <img src="{{ product.images.all.0.image.url }}" class="card-img-top custom-img" alt="{{ product.name }}">
+              {% else %}
+                <img src="{% static 'logo.jpg' %}" class="card-img-top custom-img" alt="No image">
+              {% endif %}
+              <div class="card-body text-center d-flex flex-column">
+                <h5 class="card-title text-uppercase">{{ product.name }}</h5>
+                <p class="mt-auto"><strong>{{ product.price }}</strong></p>
+                <p class="text-muted">{{ product.category }}</p>
+              </div>
+              <div class="card-footer bg-white text-center border-0">
+                <a href="{% url 'product' product.id %}" class="btn btn-dark w-75">Batafsil</a>
               </div>
             </div>
           </div>
-        </div>
-      {% endfor %}
-    </div>
+        {% endfor %}
+      </div>
+    {% elif query %}
+      <div class="alert alert-warning text-center mt-4">
+        "<strong>{{ query }}</strong>" Qabriston topilmadi.
+      </div>
+    {% endif %}
+
+    <!-- Asosiy mahsulotlar ro‘yxati (qidiruv bo‘lmasa) -->
+    {% if not query %}
+      <h4 class="mb-4">Barcha Qabristonlar:</h4>
+      <div class="row gx-4 gy-5 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4">
+        {% for product in products %}
+          <div class="col">
+            <div class="card custom-card h-100 shadow-sm">
+              {% if product.images.all %}
+                <img src="{{ product.images.all.0.image.url }}" class="card-img-top custom-img" alt="{{ product.name }}">
+              {% else %}
+              {% comment %} rasmi bolmasa o'rniga rasm qo'yadi  {% endcomment %}
+                <img src="{% static 'logo.jpg' %}" class="card-img-top custom-img" alt="No image">
+              {% endif %}
+              <div class="card-body text-center d-flex flex-column">
+                <h5 class="card-title text-uppercase">{{ product.name }}</h5>
+                <p class="mt-auto"><strong>{{ product.price }}</strong></p>
+                <p class="text-muted">{{ product.category }}</p>
+              </div>
+              <div class="card-footer bg-white text-center border-0">
+                <a href="{% url 'product' product.id %}" class="btn btn-dark w-75">Batafsil</a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
 
   </div>
 </section>

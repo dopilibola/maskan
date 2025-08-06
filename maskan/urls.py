@@ -18,7 +18,6 @@ urlpatterns = [
     # path('api/cemeteries/', views.get_cemeteries, name='get-cemeteries'),
     # path('api/cemeteries/<int:cemetery_id>/graves/', views.get_graves, name='get-graves'),
     # path('api/grave/<int:grave_id>/', views.get_grave_detail, name='get-grave-detail'),
-    path('search/', views.search, name='search' ),
     path('product/<int:pk>', views.product, name='product' ),
     path('category/<str:foo>', views.category, name='category' ),
 
