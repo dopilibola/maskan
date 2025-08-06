@@ -3,29 +3,44 @@
 
 {% block content %}
 
+<style>
+    .main-img-style {
+        max-height: 380px;
+        max-width: 100%;
+        width: auto;
+        height: auto;
+        object-fit: cover;
+        border-radius: 0.75rem;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    @media (max-width: 768px) {
+        .main-img-style {
+            max-height: 260px;
+        }
+    }
+</style>
+
 <div class="container my-5">
     <div class="card mb-4 shadow">
         <div class="row g-0">
-            <!-- Main image with modal trigger -->
-            <div class="col-md-5">
+
+            <!-- Main image (always centered) -->
+            <div class="col-md-5 d-flex align-items-center justify-content-center p-3">
                 {% if product.images.all %}
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#mainImageModal">
-                        <img src="{{ product.images.all.0.image.url }}" class="img-fluid rounded-start w-100 h-100 object-fit-cover" alt="{{ product.name }}">
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#galleryCarouselModal" data-index="0">
+                        <img src="{{ product.images.all.0.image.url }}" class="main-img-style gallery-thumb" alt="{{ product.name }}">
                     </a>
                 {% else %}
-                    <img src="{% static 'default.jpg' %}" class="img-fluid rounded-start" alt="No image available">
+                    <img src="{% static 'default.jpg' %}" class="main-img-style" alt="No image available">
                 {% endif %}
             </div>
 
             <!-- Product info -->
             <div class="col-md-7">
-                <div class="card-body text-center">
+                <div class="card-body text-center d-flex flex-column justify-content-center h-100">
                     <h3 class="card-title">{{ product.name }}</h3>
                     <p class="card-text">{{ product.description }}</p>
-                    
-                    <p class="text-muted">Category: {{ product.category }}</p>
-                    <p class="text-muted">ID: {{ product.id }}</p>
-                    
                     <a class="nav-link" href="{% url 'qabristonmap' pk=product.pk %}">Map kirish</a>
                 </div>
             </div>
@@ -38,8 +53,8 @@
         <h5>Gallery:</h5>
         <div class="d-flex flex-wrap gap-3">
             {% for image in product.images.all %}
-                <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal{{ forloop.counter }}">
-                    <img src="{{ image.image.url }}" width="140" height="140" class="img-thumbnail" alt="Gallery image">
+                <a href="#" data-bs-toggle="modal" data-bs-target="#galleryCarouselModal" data-index="{{ forloop.counter0 }}">
+                    <img src="{{ image.image.url }}" width="140" height="140" class="img-thumbnail gallery-thumb" alt="Gallery image">
                 </a>
             {% endfor %}
         </div>
@@ -47,28 +62,52 @@
     {% endif %}
 </div>
 
-<!-- Main image modal -->
-<div class="modal fade" id="mainImageModal" tabindex="-1" aria-hidden="true">
+<!-- Unified carousel modal -->
+<div class="modal fade" id="galleryCarouselModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-xl">
     <div class="modal-content bg-transparent border-0">
       <div class="modal-body p-0">
-        <img src="{{ product.images.all.0.image.url }}" class="img-fluid w-100 rounded shadow-lg" alt="{{ product.name }}">
+        <div id="productImageCarousel" class="carousel slide" data-bs-ride="carousel">
+          <div class="carousel-inner">
+            {% for image in product.images.all %}
+              <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                <img src="{{ image.image.url }}" class="d-block w-100 rounded shadow-lg" alt="Gallery image">
+              </div>
+            {% endfor %}
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#productImageCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#productImageCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Gallery image modals -->
-{% for image in product.images.all %}
-<div class="modal fade" id="imageModal{{ forloop.counter }}" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-xl">
-    <div class="modal-content bg-transparent border-0">
-      <div class="modal-body p-0">
-        <img src="{{ image.image.url }}" class="img-fluid w-100 rounded shadow-lg" alt="Gallery image">
-      </div>
-    </div>
-  </div>
-</div>
-{% endfor %}
+<!-- JavaScript to make carousel open on correct index -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const thumbs = document.querySelectorAll('[data-bs-target="#galleryCarouselModal"]');
+    const carousel = document.getElementById('productImageCarousel');
+    let carouselInstance;
+
+    thumbs.forEach((thumb, index) => {
+        thumb.addEventListener('click', function () {
+            const targetIndex = parseInt(this.getAttribute('data-index'));
+            setTimeout(() => {
+                if (!carouselInstance) {
+                    carouselInstance = bootstrap.Carousel.getInstance(carousel) || new bootstrap.Carousel(carousel);
+                }
+                carouselInstance.to(targetIndex);
+            }, 300); // delay for modal animation
+        });
+    });
+});
+</script>
 
 {% endblock %}
