@@ -28,10 +28,10 @@ def login_user(request):
 
         if user is not None:
             login(request, user) 
-            messages.success(request, ('Login successful'))
+            messages.success(request, ('Login muvaffaqiyatli amalga oshirildi'))
             return redirect('home')
         else:
-            messages.success(request, ('error try again....'))
+            messages.success(request, ('Login yoki parol xato'))
             return redirect('login')
     else: 
         return render(request, 'login.html', {})
@@ -42,7 +42,7 @@ def login_user(request):
 
 def logout_user(request):
     logout(request)
-    messages.success(request, 'Logged out succesfully')
+    messages.success(request, 'chiqish muvaffaqiyatli amalga oshirildi')
     return redirect('home')
 
 
@@ -66,11 +66,11 @@ def register_user(request):
             group = Group.objects.get(name='Foydalanuvchi')
             user.groups.add(group)
 
-            messages.success(request, 'User created. Please fill out your profile.')
+            messages.success(request, 'Ro\'yxatdan muvaffaqiyatli o\'tdingiz. Profilingizni to\'ldiring.')
             return redirect('edit_profile')  # ✅ Ro'yxatdan keyin profilingni to'ldirishga yo'naltiramiz
         
         else:
-            messages.error(request, ('Registration failed. Please try again.'))
+            messages.error(request, ('Ro\'yxatdan o\'tishda xato. Iltimos, qaytadan urinib ko\'ring.'))
             return redirect('register')
     else:
         return render(request, 'register.html', {'form':form })
@@ -84,7 +84,7 @@ def forgot_password(request):
             messages.success(request, 'Parolni tiklash uchun email yuborildi.')
             return redirect('login')
         except User.DoesNotExist:
-            messages.error(request, 'Email not found.')
+            messages.error(request, 'Bu email bilan foydalanuvchi topilmadi. Iltimos, qaytadan urinib ko\'ring.')
             return redirect('forgot_password')
 
     return render(request, 'forgot_password.html')
@@ -99,7 +99,7 @@ def update_password(request):
         form = ChangePasswordForm(current_user, request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, "Password updated. Please log in again.")
+            messages.success(request, "Parol muvaffaqiyatli yangilandi.")
             return redirect('login')
         else:
             # ✅ Har bir xatoni alohida ko‘rsatamiz
