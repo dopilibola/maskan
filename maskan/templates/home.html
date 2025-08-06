@@ -3,11 +3,35 @@
 
 {% block content %}
 <style>
-  .custom-card {
-    border-radius: 1rem;
-    transition: transform .3s, box-shadow .3s;
-    overflow: hidden;
-  }
+  .custom-detail-btn {
+  background-color: #000;
+  color: #fff;
+  border: 2px solid #000;
+  border-radius: 50px;
+  padding: 10px 28px;
+  font-weight: 500;
+  transition: all 0.3s ease-in-out;
+  text-decoration: none;
+}
+
+.custom-detail-btn:hover {
+  background-color: #fff;
+  color: #000;
+  border-color: #000;
+  transform: scale(1.05);
+}
+
+.custom-detail-btn:active {
+  background-color: #222;
+  color: #fff;
+  transform: scale(0.98);
+}
+
+.custom-card {
+  border-radius: 1rem;
+  transition: transform .3s, box-shadow .3s;
+  overflow: hidden;
+}
   .custom-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 16px 32px rgba(0, 0, 0, .15);
@@ -91,7 +115,7 @@
         <form method="POST" action="{% url 'home' %}">
           {% csrf_token %}
           <div class="input-group">
-            <input type="text" class="form-control form-control-lg" name="searched" placeholder="Qabristonni Qidirish" value="{{ query|default:'' }}">
+            <input type="text" class="form-control form-control-lg" name="searched" placeholder="Qabristonni qidirish" value="{{ query|default:'' }}">
             <button type="submit" class="custom-search-btn">Qidirish</button>
           </div>
         </form>
@@ -128,7 +152,7 @@
     {% endif %}
 
     {% if not query %}
-      <h4 class="mb-4">Barcha Qabristonlar:</h4>
+      <h4 class="mb-4">Barcha qabristonlar:</h4>
       <div class="row gx-4 gy-5 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4">
         {% for product in products %}
           <div class="col">
@@ -144,8 +168,9 @@
                 <p class="text-muted">{{ product.category }}</p>
               </div>
               <div class="card-footer bg-white text-center border-0">
-                <a href="{% url 'product' product.id %}" class="btn btn-dark w-75">Batafsil</a>
+                <a href="{% url 'product' product.id %}" class="btn custom-detail-btn w-75">Batafsil</a>
               </div>
+
             </div>
           </div>
         {% endfor %}
