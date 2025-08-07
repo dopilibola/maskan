@@ -239,19 +239,54 @@ def home(request):
     return render(request, 'home.html', context)
 
 
+
 def qabristonmap_search_page(request, pk):
-    # HTML sahifa ochish uchun view
-    return render(request, 'search.html', {'pk': pk})
+    qabriston = get_object_or_404(Qabristonmap, pk=pk)
+    qidiruv = request.GET.get('qidiruv', '')
+
+    # Qabrlarni faqat shu qabriston uchun
+    all_qabrlar = Qabristonmap.objects.filter(qabriston=qabriston).select_related()
+    
+    # Qabrlarni qator bo‘yicha guruhlash
+    grouped_qabrlar = {}
+    for qabr in all_qabrlar:
+        if str(qidiruv).lower() in str(qabr.ism_familiyasi_marhum).lower():
+            grouped_qabrlar.setdefault(qabr.qator, []).append(qabr)
+        elif not qidiruv:
+            grouped_qabrlar.setdefault(qabr.qator, []).append(qabr)
+
+    context = {
+        'product': qabriston,  # modalda ishlatiladi
+        'grouped_qabrlar': grouped_qabrlar,
+    }
+    return render(request, 'qabristonmap.html', context)
 
 def qabristonmap_search_ajax(request, pk):
-    # JSON qidiruv uchun view
-    query = request.GET.get('query', '')
-    results = Qabristonmap.objects.filter(
-        product__id=pk
-    ).filter(
-    
-        Q(ism_familiyasi_marhum__icontains=query) |
-        Q(years__icontains=query) |
-        Q(years_old__icontains=query)
-    ).values('id', 'ism_familiyasi_marhum', 'years', 'qator', 'qabr_soni', 'product')
-    return JsonResponse(list(results), safe=False)
+    # Qabriston ob'ektini olamiz
+    qabriston = get_object_or_404(Product, pk=pk)
+    qidiruv = request.GET.get('qidiruv', '')
+
+    # Shu qabristonga tegishli qabrlar
+    qabrlar = Qabristonmap.objects.filter(product=qabriston)
+
+    # Qidiruv bo‘lsa — filter
+    if qidiruv:
+        qabrlar = qabrlar.filter(
+            Q(ism_familiyasi_marhum__icontains=qidiruv) |
+            Q(years_old__icontains=qidiruv) |
+            Q(years_new__icontains=qidiruv) |
+            Q(yosh__icontains=qidiruv)
+        ) 
+
+    # Json uchun natijalar
+    result = []
+    for qabr in qabrlar:
+        result.append({
+            'id': qabr.id,
+            'ism_familiyasi': qabr.ism_familiyasi_marhum,
+            'qator': qabr.qator,
+            'qabr_soni': qabr.qabr_soni,
+            'status': qabr.status,
+        })
+
+    return JsonResponse({'results': result})

@@ -1,204 +1,270 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Qabriston Xarita</title>
+{% extends 'base.html' %}
+{% load static %}
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f3f4f6;
-      padding: 20px;
-    }
+{% block content %}
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f3f4f6;
+    padding: 20px;
+  }
 
-    .row-label {
-      font-weight: bold;
-      margin-top: 20px;
-    }
+  .custom-search-btn {
+    background-color: #000;
+    color: #fff;
+    border: 2px solid #000;
+    border-radius: 50px;
+    padding: 10px 28px;
+    font-weight: 500;
+    transition: all 0.3s ease-in-out;
+  }
 
-    .row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
+  .custom-search-btn:hover {
+    background-color: #fff;
+    color: #000;
+    border-color: #000;
+    transform: scale(1.05);
+  }
 
-    /* Tomb-shaped grave marker */
-    .grave-square {
-      position: relative;
-      width: 80px;
-      height: 120px;
-      background-color: green; /* default, overridden by status classes */
-      cursor: pointer;
-      transition: transform 0.2s;
-      overflow: hidden;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      color: white;
-      font-weight: bold;
-    }
+  .custom-search-btn:active {
+    background-color: #222;
+    color: #fff;
+    transform: scale(0.98);
+  }
 
-    .grave-square::before {
-      content: "";
-      position: absolute;
-      top: -40px;       /* arch sits above the square */
-      left: 0;
-      width: 100%;
-      height: 80px;     /* height of the half-circle arch */
-      background: inherit;
-      /* half-circle at the top */
-      border-bottom-left-radius: 50% 100%;
-      border-bottom-right-radius: 50% 100%;
-    }
+  .search-input {
+    border-radius: 50px 0 0 50px !important;
+    padding-left: 20px;
+    font-size: 16px;
+  }
 
-    .grave-square:hover {
-      transform: scale(1.05);
-    }
+  .row-label {
+    font-weight: bold;
+    margin-top: 20px;
+  }
 
-    /* Status colors */
-    .grave-square.green { background-color: #16a34a; }
-    .grave-square.yellow { background-color: #d97706; }
-    .grave-square.red { background-color: #dc2626; }
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
 
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 10;
-      left: 0; top: 0;
-      width: 100%; height: 100%;
-      overflow: auto;
-      background-color: rgba(0,0,0,0.5);
-    }
+  .grave-square {
+    position: relative;
+    width: 80px;
+    height: 120px;
+    background-color: green;
+    cursor: pointer;
+    transition: transform 0.2s;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+  }
 
-    .modal-content {
-      background-color: #fff;
-      margin: 5% auto;
-      padding: 20px;
-      width: 90%;
-      max-width: 500px;
-      border-radius: 10px;
-      text-align: center;
-    }
+  .grave-square::before {
+    content: "";
+    position: absolute;
+    top: -40px;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    background: inherit;
+    border-bottom-left-radius: 50% 100%;
+    border-bottom-right-radius: 50% 100%;
+  }
 
-    .modal-content img {
-      width: 100%;
-      border-radius: 10px;
-      margin-top: 10px;
-    }
+  .grave-square:hover {
+    transform: scale(1.05);
+  }
 
-    .close {
-      float: right;
-      font-size: 24px;
-      font-weight: bold;
-      color: #aaa;
-      cursor: pointer;
-    }
+  .grave-square.green { background-color: #16a34a; }
+  .grave-square.yellow { background-color: #d97706; }
+  .grave-square.red { background-color: #dc2626; }
 
-    .close:hover {
-      color: black;
-    }
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 10;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+  }
 
-    .grave-info-box {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 15px;
-      text-align: left;
-    }
+  .modal-content {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 20px;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 10px;
+    text-align: center;
+  }
 
-    .grave-info-box div {
-      background: #f1f1f1;
-      padding: 10px;
-      border-radius: 6px;
-    }
+  .modal-content img {
+    width: 100%;
+    border-radius: 10px;
+    margin-top: 10px;
+  }
 
-    .btn-edit {
-      margin-top: 20px;
-      padding: 10px 15px;
-      background: #e5e7eb;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
+  .close {
+    float: right;
+    font-size: 24px;
+    font-weight: bold;
+    color: #aaa;
+    cursor: pointer;
+  }
 
-    #kartaSelect {
-      margin-bottom: 20px;
-      padding: 8px;
-      font-size: 16px;
-    }
-  </style>
-</head>
-<body>
+  .close:hover {
+    color: black;
+  }
 
-  <h2>Qabriston Xarita</h2>
+  .grave-info-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 15px;
+    text-align: left;
+  }
 
-<a class="nav-link" href="{% url 'qabristonmap_search' pk=product.id %}">Qabriston Qidirish</a>
+  .grave-info-box div {
+    background: #f1f1f1;
+    padding: 10px;
+    border-radius: 6px;
+  }
 
+  .btn-edit {
+    margin-top: 20px;
+    padding: 10px 15px;
+    background: #e5e7eb;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+</style>
 
+<div class="container py-4">
+  <!-- Qidiruv -->
+  <form method="GET">
+    <div class="input-group mb-4">
+      <input type="text" class="form-control form-control-lg search-input" placeholder="Qabrni ism yoki familiya orqali qidirish..." name="qidiruv" value="{{ request.GET.qidiruv }}">
+      <button class="custom-search-btn" type="submit">Qidirish</button>
+    </div>
+  </form>
+
+  <!-- Qabrlar xaritasi -->
   <div id="grave-container">
     {% for qator, qabrlar in grouped_qabrlar.items %}
-      <div class="row" data-qator="{{ qator }}">
-        <div class="row-label">Qator: {{ qator }}</div>
-        {% for qabr in qabrlar %}
-          <div class="grave-square {{ qabr.status }}"
-               data-karta="{{ qabr.karta_number }}"
-               onclick="showModal({{ qabr.id }})">
-            {{ qabr.qabr_soni }}
-          </div>
-        {% endfor %}
-      </div>
+      {% with matched_qabrlar=qabrlar|dictsort:"qabr_soni" %}
+        <div class="row" data-qator="{{ qator }}">
+          <div class="row-label">Qator: {{ qator }}</div>
+          {% for qabr in matched_qabrlar %}
+            {% if not request.GET.qidiruv or request.GET.qidiruv|lower in qabr.ism_familiyasi_marhum|lower %}
+              <div class="grave-square {{ qabr.status }}" onclick="showModal({{ qabr.id }})">
+                {{ qabr.qabr_soni }}
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endwith %}
     {% endfor %}
   </div>
+</div>
 
-  {% for qator, qabrlar in grouped_qabrlar.items %}
-    {% for qabr in qabrlar %}
-      <div class="modal" id="modal-{{ qabr.id }}">
-        <div class="modal-content">
-          <span class="close" onclick="closeModal({{ qabr.id }})">&times;</span>
-          <h2>{{ qabr.ism_familiyasi_marhum }}</h2>
-          <p><em>{{ qabr.karta_number }}</em></p>
+<!-- Modal oynalar -->
+{% for qator, qabrlar in grouped_qabrlar.items %}
+  {% for qabr in qabrlar %}
+    <div class="modal" id="modal-{{ qabr.id }}">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal({{ qabr.id }})">&times;</span>
+        <h2>{{ qabr.ism_familiyasi_marhum }}</h2>
+        <p><em>{{ qabr.karta_number }}</em></p>
 
-          <div class="grave-info-box">
-            <div><strong>Yoshi:</strong><br>{{ qabr.years }}</div>
-            <div><strong>Tug‘ilgan:</strong><br>{{ qabr.years_new }}</div>
-            <div><strong>Vafot:</strong><br>{{ qabr.years_old }}</div>
-            <div><strong>Qator:</strong><br>{{ qabr.qator }}</div>
-            <div><strong>Qabr #:</strong><br>{{ qabr.qabr_soni }}</div>
-            <div><strong>Qabriston:</strong><br>{{ product }}</div>
-          </div>
-
-          {% for img in qabr.images.all %}
-            <img src="{{ img.image.url }}" alt="Qabr rasmi">
-          {% empty %}
-            <p>Rasm yo‘q</p>
-          {% endfor %}
-
-          <button class="btn-edit">✏️ Edit</button>
+        <div class="grave-info-box">
+          <div><strong>Yoshi:</strong><br>{{ qabr.years }}</div>
+          <div><strong>Tug‘ilgan:</strong><br>{{ qabr.years_new }}</div>
+          <div><strong>Vafot:</strong><br>{{ qabr.years_old }}</div>
+          <div><strong>Qator:</strong><br>{{ qabr.qator }}</div>
+          <div><strong>Qabr #:</strong><br>{{ qabr.qabr_soni }}</div>
+          <div><strong>Qabriston:</strong><br>{{ product }}</div>
         </div>
+
+        {% for img in qabr.images.all %}
+          <img src="{{ img.image.url }}" alt="Qabr rasmi">
+        {% empty %}
+          <p>Rasm yo‘q</p>
+        {% endfor %}
+
+        <button class="btn-edit">✏️ Edit</button>
       </div>
-    {% endfor %}
+    </div>
   {% endfor %}
+{% endfor %}
 
-  <script>
-    function showModal(id) {
-      document.getElementById('modal-' + id).style.display = 'block';
-    }
-    function closeModal(id) {
-      document.getElementById('modal-' + id).style.display = 'none';
-    }
-    window.onclick = function(event) {
-      document.querySelectorAll('.modal').forEach(modal => {
-        if (event.target === modal) modal.style.display = 'none';
-      });
-    };
-    function filterByKarta() {
-      const sel = document.getElementById('kartaSelect').value;
-      document.querySelectorAll('.grave-square').forEach(el => {
-        el.style.display = (sel==='all' || el.dataset.karta===sel) ? 'flex' : 'none';
-      });
-    }
-  </script>
+<script>
+  const searchInput = document.querySelector('input[name="qidiruv"]');
+  const graveContainer = document.getElementById("grave-container");
 
-</body>
-</html>
+  const qabristonId = {{ product.id }};
+  const ajaxUrlTemplate = "{% url 'qabristonmap_search_ajax' 0 %}";
+  const ajaxUrl = ajaxUrlTemplate.replace("/0/", `/${qabristonId}/`);
+
+  searchInput.addEventListener("input", function () {
+    const qidiruv = searchInput.value;
+
+    fetch(ajaxUrl + "?qidiruv=" + encodeURIComponent(qidiruv))
+      .then(response => response.json())
+      .then(data => {
+        graveContainer.innerHTML = "";
+
+        const grouped = {};
+
+        data.results.forEach(qabr => {
+          if (!grouped[qabr.qator]) grouped[qabr.qator] = [];
+          grouped[qabr.qator].push(qabr);
+        });
+
+        for (const [qator, qabrlar] of Object.entries(grouped)) {
+          const rowDiv = document.createElement("div");
+          rowDiv.className = "row";
+          rowDiv.dataset.qator = qator;
+
+          const labelDiv = document.createElement("div");
+          labelDiv.className = "row-label";
+          labelDiv.textContent = "Qator: " + qator;
+          rowDiv.appendChild(labelDiv);
+
+          qabrlar.sort((a, b) => a.qabr_soni - b.qabr_soni);
+
+          qabrlar.forEach(qabr => {
+            const qabrDiv = document.createElement("div");
+            qabrDiv.className = `grave-square ${qabr.status}`;
+            qabrDiv.textContent = qabr.qabr_soni;
+            qabrDiv.onclick = () => showModal(qabr.id);
+            rowDiv.appendChild(qabrDiv);
+          });
+
+          graveContainer.appendChild(rowDiv);
+        }
+      });
+  });
+
+  function showModal(id) {
+    document.getElementById('modal-' + id).style.display = 'block';
+  }
+
+  function closeModal(id) {
+    document.getElementById('modal-' + id).style.display = 'none';
+  }
+
+  window.onclick = function(event) {
+    document.querySelectorAll('.modal').forEach(modal => {
+      if (event.target === modal) modal.style.display = 'none';
+    });
+  };
+</script>
+{% endblock %}
