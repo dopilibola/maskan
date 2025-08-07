@@ -38,6 +38,7 @@ class QabristonmapAdmin(admin.ModelAdmin):
             return qs.none()
 
 
+admin.site.register(Qabristonmap, QabristonmapAdmin)
 
 class Qabristonmap_imageAdmin(admin.ModelAdmin):
     list_display = ('image_preview', 'product_name', 'cemetery_name', 'uploaded_at')
@@ -61,6 +62,7 @@ admin.site.register(Qabristonmap_image, Qabristonmap_imageAdmin)
 
 
 @admin.register(Product)
+
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('name', 'location_link', 'category')
     search_fields = ('name', 'category__name')
@@ -86,12 +88,6 @@ class ProductAdmin(admin.ModelAdmin):
     location_link.short_description = "Lokatsiya (Google Maps)"
 
 
-
-# admin.site.register(Product, ProductAdmin)
-
-
-
-
 @admin.register(ProductImage)
 class ProductImageAdmin(admin.ModelAdmin):
     list_display = ('product', 'image_preview', 'uploaded_at')
@@ -102,3 +98,4 @@ class ProductImageAdmin(admin.ModelAdmin):
 class UserAccessAdmin(admin.ModelAdmin):
     list_display = ('user',)
     filter_horizontal = ('categories',)
+
