@@ -12,6 +12,17 @@
         object-fit: cover;
         border-radius: 0.75rem;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .main-img-style:hover {
+        transform: scale(1.03);
+    }
+
+    .back-btn {
+        margin-bottom: 1rem;
+        border-radius: 0.5rem;
+        padding: 0.5rem 1.25rem;
     }
 
     @media (max-width: 768px) {
@@ -19,13 +30,26 @@
             max-height: 260px;
         }
     }
+
+    .gallery-thumb {
+        transition: transform 0.2s ease;
+    }
+
+    .gallery-thumb:hover {
+        transform: scale(1.05);
+    }
 </style>
 
 <div class="container my-5">
-    <div class="card mb-4 shadow">
-        <div class="row g-0">
 
-            <!-- Main image (always centered) -->
+    <!-- Back button -->
+    <a href="javascript:history.back()" class="btn btn-outline-dark back-btn">
+        ← Orqaga qaytish
+    </a>
+
+    <div class="card mb-4 shadow-sm border-0">
+        <div class="row g-0">
+            <!-- Main image -->
             <div class="col-md-5 d-flex align-items-center justify-content-center p-3">
                 {% if product.images.all %}
                     <a href="#" data-bs-toggle="modal" data-bs-target="#galleryCarouselModal" data-index="0">
@@ -38,10 +62,12 @@
 
             <!-- Product info -->
             <div class="col-md-7">
-                <div class="card-body text-center d-flex flex-column justify-content-center h-100">
-                    <h3 class="card-title">{{ product.name }}</h3>
-                    <p class="card-text">{{ product.description }}</p>
-                    <a class="nav-link" href="{% url 'qabristonmap' pk=product.pk %}">Map kirish</a>
+                <div class="card-body d-flex flex-column justify-content-center h-100 text-center">
+                    <h3 class="card-title fw-semibold">{{ product.name }}</h3>
+                    <p class="card-text text-muted">{{ product.description }}</p>
+                    <a class="btn btn-dark mt-3" href="{% url 'qabristonmap' pk=product.pk %}">
+                        Qabriston xaritasi
+                    </a>
                 </div>
             </div>
         </div>
@@ -50,7 +76,7 @@
     <!-- Image gallery -->
     {% if product.images.all|length > 1 %}
     <div class="mb-5">
-        <h5>Gallery:</h5>
+        <h5 class="mb-3">Rasmlar:</h5>
         <div class="d-flex flex-wrap gap-3">
             {% for image in product.images.all %}
                 <a href="#" data-bs-toggle="modal" data-bs-target="#galleryCarouselModal" data-index="{{ forloop.counter0 }}">
@@ -77,11 +103,11 @@
           </div>
           <button class="carousel-control-prev" type="button" data-bs-target="#productImageCarousel" data-bs-slide="prev">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
+            <span class="visually-hidden">Oldingi</span>
           </button>
           <button class="carousel-control-next" type="button" data-bs-target="#productImageCarousel" data-bs-slide="next">
             <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
+            <span class="visually-hidden">Keyingi</span>
           </button>
         </div>
       </div>
@@ -89,7 +115,7 @@
   </div>
 </div>
 
-<!-- JavaScript to make carousel open on correct index -->
+<!-- JavaScript to open carousel on clicked index -->
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     const thumbs = document.querySelectorAll('[data-bs-target="#galleryCarouselModal"]');
@@ -104,7 +130,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     carouselInstance = bootstrap.Carousel.getInstance(carousel) || new bootstrap.Carousel(carousel);
                 }
                 carouselInstance.to(targetIndex);
-            }, 300); // delay for modal animation
+            }, 300);
         });
     });
 });
