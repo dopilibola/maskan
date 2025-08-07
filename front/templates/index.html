@@ -226,7 +226,9 @@ document.getElementById('scrollToContact').addEventListener('click', function ()
                     </div>
                     <div class="form-group">
                         <span class="form-icon">📞</span>
-                        <input type="tel" name="phone" placeholder="Telefon raqamingiz" required>
+                        <!-- Faqat raqam kiritishga ruxsat -->
+                        <input type="tel" name="phone" placeholder="Telefon raqamingiz" required
+                               oninput="this.value = this.value.replace(/[^0-9]/g, '');">
                     </div>
                     <button type="submit" class="btn-primary">Xabar yuborish</button>
                 </form>
@@ -234,6 +236,7 @@ document.getElementById('scrollToContact').addEventListener('click', function ()
         </div>
     </div>
 </section>
+
 
 <!-- ✅ JS: So‘rov yuborish va xabar ko‘rsatish -->
 <script>
@@ -282,6 +285,16 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
     font-size: 16px;
     animation: fadeIn 0.5s ease-in-out;
 }
+  .contact-info a {
+    color: white;
+    text-decoration: none;
+  }
+
+  .contact-info a:hover {
+    color: white;
+    text-decoration: none;
+  }
+  
 .alert-success {
     background-color: #d4edda;
     color: #155724;
@@ -315,8 +328,14 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
             <div class="footer-section">
                 <h4>Aloqa Ma'lumotlari</h4>
                 <div class="contact-info">
-                    <div><span>📧</span> ochilovkomronbek809@gmail.com</div>
-                    <div><span>📞</span> +998 (94) 977-47-81</div>
+                    <div>
+                        <span>📧</span>
+                        <a href="mailto:ochilovkomronbek809@gmail.com">ochilovkomronbek809@gmail.com</a>
+                    </div>
+                    <div>
+                        <span>📞</span>
+                        <a href="tel:+998949774781">+998 (94) 977-47-81</a>
+                    </div>
                 </div>
             </div>
         </div>
