@@ -16,12 +16,14 @@
         color: #343a40;
         background-color: #f8f9fa;
         transition: all 0.2s ease-in-out;
-    }
+        text-decoration: none;
+     }
 
     .btn-secondary-action:hover {
         background-color: #e9ecef;
         border-color: #adb5bd;
         color: #212529;
+        text-decoration: none;
     }
 
     .btn-secondary-action i {
@@ -105,14 +107,14 @@
         <button type="submit" class="btn btn-login">Kirish</button>
     </form>
 
-    {% comment %} <button type="button" class="btn-secondary-action" onclick="window.location.href='{% url 'register' %}'"> {% endcomment %}
+    <a href="https://t.me/maskangobot" class="btn-secondary-action" target="_blank" rel="noopener">
         <i class="bi bi-person-plus-fill"></i>
-        <span>Ro'yhatdan o'tish</span>
-    </button>
-    {% comment %} <button type="button" class="btn-secondary-action" onclick="window.location.href='{% url 'forgot_password' %}'"> {% endcomment %}
+        <span>Ro'yhatdan o'tish (Telegram)</span>
+    </a>
+    <a href="https://t.me/maskangobot" class="btn-secondary-action" target="_blank" rel="noopener">
         <i class="bi bi-key-fill"></i>
-        <span>Parolni unutdingizmi?</span>
-    </button>
+        <span>Parolni unutdingizmi? (Telegram)</span>
+    </a>
 </div>
 
 {% endblock %}
