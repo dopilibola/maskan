@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-from .forms import InfodataForm, QabristonForm, ImageForm
+from .forms import  QabristonForm, ImageForm
 from .models import Image
 import requests
 from decouple import config
@@ -41,26 +41,26 @@ def send_telegram_message(message):
     }
     requests.post(url, data=data)
 
-@login_required(login_url='/login/')
-def add_infodata(request):
-    if not request.user.is_authenticated:
-        return render(request, 'login.html')
-    else:
-        if request.method == 'POST':
-            form = InfodataForm(request.POST)
-            if form.is_valid():
-                infodata = form.save(commit=False)
-                infodata.created_by = request.user
-                infodata.save()
+# @login_required(login_url='/login/')
+# def add_infodata(request):
+#     if not request.user.is_authenticated:
+#         return render(request, 'login.html')
+#     else:
+#         if request.method == 'POST':
+#             form = InfodataForm(request.POST)
+#             if form.is_valid():
+#                 infodata = form.save(commit=False)
+#                 infodata.created_by = request.user
+#                 infodata.save()
 
-                # 🔔 Telegramga xabar yuborish
-                message = f"Yangi infodata qo‘shildi!\nUser: {request.user.username}\nID: {infodata.id}"
-                send_telegram_message(message)
+#                 # 🔔 Telegramga xabar yuborish
+#                 message = f"Yangi infodata qo‘shildi!\nUser: {request.user.username}\nID: {infodata.id}"
+#                 send_telegram_message(message)
 
-                return redirect('contact_success') 
-        else:
-            form = InfodataForm()
-        return render(request, 'infodata.html', {'form': form})
+#                 return redirect('contact_success') 
+#         else:
+#             form = InfodataForm()
+#         return render(request, 'infodata.html', {'form': form})
 # views.py
 
 

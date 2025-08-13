@@ -2,6 +2,7 @@
 import os
 from dotenv import load_dotenv
 from pathlib import Path
+AUTH_USER_MODEL = 'maskan.User'
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 load_dotenv()
@@ -110,14 +111,14 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
-        {
-        'NAME': 'yourapp.validators.validate_password_length',
-    },
-    {
-        'NAME': 'yourapp.validators.validate_password_not_numeric',
-    },
-    
+    # {
+    #     'NAME': 'yourapp.validators.validate_password_length',
+    # },
+    # {
+    #     'NAME': 'yourapp.validators.validate_password_not_numeric',
+    # },
 ]
+
 
 
 # Internationalization

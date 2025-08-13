@@ -1,39 +1,45 @@
 from django.db import models
-from django.contrib.auth.models import User
-from django.db.models.signals import post_save
 from django.core.validators import RegexValidator
 from django.utils.html import format_html
+from django.contrib.auth.models import User, AbstractUser, Group, Permission
 
-# Profile modelini to'g'rilaymiz
-class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    full_name = models.CharField(max_length=100, default='Unknown')
-    job = models.CharField(max_length=255, default='Unemployed')
-    image = models.ImageField(upload_to='profile_images/', blank=True, null=True)
-    date_modified = models.DateTimeField(auto_now=True)  # fixing typo in field name
-    phone = models.CharField(max_length=200, blank=True)
-    address1 = models.CharField(max_length=200, blank=True)
-    address2 = models.CharField(max_length=200, blank=True)
-    city = models.CharField(max_length=200, blank=True)
-    state = models.CharField(max_length=200, blank=True)
-    zipcode = models.CharField(max_length=200, blank=True)
-    country = models.CharField(max_length=200, blank=True)
-    old_cart = models.CharField(max_length=200, blank=True, null=True)
+
+
+
+
+class User(AbstractUser):
+    phone_number = models.CharField(max_length=15, unique=True)
+    is_verified = models.BooleanField(default=False)
+    verification_code = models.CharField(max_length=6, blank=True, null=True)
+
+    # Guruh va ruxsatlar uchun related_name larni to‘g‘ri qo‘yamiz
+    groups = models.ManyToManyField(
+        Group,
+        related_name='custom_users',  # eski user_set bilan to‘qnashmaydi
+        blank=True
+    )
+    user_permissions = models.ManyToManyField(
+        Permission,
+        related_name='custom_users',  # eski user_set bilan to‘qnashmaydi
+        blank=True
+    )
 
     def __str__(self):
-        return self.user.username
+        return self.username
 
 
-# Signal to create Profile when user is created
-def create_profile(sender, instance, created, **kwargs):
-    if created:
-        Profile.objects.create(user=instance)
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
+    phone_number = models.CharField(max_length=20, unique=True)
+    temp_pin = models.CharField(max_length=12, blank=True, null=True)
+    telegram_verified = models.BooleanField(default=False)
+    full_name = models.CharField(max_length=150, blank=True)
+    home_address = models.CharField(max_length=255, blank=True)
+    chat_id = models.CharField(max_length=50, blank=True, null=True)
 
-post_save.connect(create_profile, sender=User)
+    def __str__(self):
+        return self.phone_number or (self.user.username if self.user else "No User")
 
-
-
-# vil tuman shahar 
 
 
 
@@ -286,9 +292,9 @@ class Qabristonmap_image(models.Model):
         verbose_name_plural = "Qabrning rasmlari"
 
     
-class UserAccess(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    categories = models.ManyToManyField(Category)
+# class UserAccess(models.Model):
+#     user = models.OneToOneField(User, on_delete=models.CASCADE)
+#     categories = models.ManyToManyField(Category)
 
-    def __str__(self):
-        return self.user.username
+#     def __str__(self):
+#         return self.user.username

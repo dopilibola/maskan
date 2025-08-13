@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Product, Category, ProductImage, Location, Qabristonmap, Qabristonmap_image, UserAccess
+from .models import Product, Category, ProductImage, Location, Qabristonmap, Qabristonmap_image, User, Profile
 from django.utils.html import format_html
 
 
@@ -94,8 +94,16 @@ class ProductImageAdmin(admin.ModelAdmin):
     readonly_fields = ('image_preview',)
 
 
-@admin.register(UserAccess)
-class UserAccessAdmin(admin.ModelAdmin):
-    list_display = ('user',)
-    filter_horizontal = ('categories',)
+@admin.register(User)
+class CustomUserAdmin(admin.ModelAdmin):
+    list_display = ('username', 'phone_number', 'is_verified')
+    search_fields = ('username', 'phone_number')
+    list_filter = ('is_active', 'is_verified', 'is_staff')
+
+
+@admin.register(Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = ('phone_number', 'full_name', 'home_address', 'chat_id', 'telegram_verified', 'user')
+    search_fields = ('phone_number', 'full_name', 'chat_id', 'user__username')
+    list_filter = ('telegram_verified',)
 

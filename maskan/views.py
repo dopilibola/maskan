@@ -1,155 +1,243 @@
 from django.shortcuts import render, redirect 
-from django.contrib.auth import authenticate, login, logout
+
 from django.contrib import messages
-from .forms import SignUpForm, ChangePasswordForm, ProfileForm
-from .models import Profile, Product, Category, Qabristonmap, Location
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import Group
+from django.views.decorators.csrf import csrf_exempt
+from .models import  Product, Category, Qabristonmap, Location, Profile
+from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from collections import defaultdict, OrderedDict
 from django.db.models import Q
-from django.contrib.auth.models import User
+from .forms import LoginForm
+from django.contrib.auth import get_user_model
 
-# Create your views here.
-
-
-
-
-
+import random
+import json
+import traceback
 
 
+# ------------------------------------------
+@csrf_exempt
+def api_bot_register(request):
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'Faqat POST kerak'}, status=405)
 
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'status': 'error', 'message': 'JSON xato'}, status=400)
+
+    chat_id = data.get('chat_id', '').strip()
+    full_name = data.get('full_name', '').strip()
+    phone_number = data.get('phone_number', '').strip()
+    home_address = data.get('home_address', '').strip()
+    password = data.get('password', '').strip()
+
+    if not phone_number or not password or not chat_id:
+        return JsonResponse({'status': 'error', 'message': 'phone_number, password va chat_id kerak'}, status=400)
+
+    User = get_user_model()
+
+    # To'g'ri filter: Profile modelida chat_id va telegram_verified bor deb faraz qilamiz
+    profile = Profile.objects.filter(
+        user__isnull=False,
+        telegram_verified=True,
+        chat_id=chat_id
+    ).first()
+    if not profile:
+        profile = Profile.objects.filter(
+            phone_number=phone_number,
+            telegram_verified=True,
+            user__isnull=False
+        ).first()
+
+    if profile and profile.user:
+        return JsonResponse({
+            'status': 'exists',
+            'username': profile.user.username,
+            'password': profile.temp_pin or '',
+            'message': "Foydalanuvchi allaqachon ro‘yxatdan o‘tgan"
+        })
+
+    # Yangi user yaratamiz
+    username = phone_number
+    if User.objects.filter(username=username).exists():
+        username = f"{phone_number}_{random.randint(1000, 9999)}"
+
+    try:
+        user = User.objects.create_user(
+            username=username,
+            password=password,
+            phone_number=phone_number
+        )
+        user.is_verified = True
+        user.save()
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': f'Foydalanuvchi yaratishda xatolik: {str(e)}'}, status=500)
+
+    # Profile yaratishda xatolik bo'lishi mumkin, uni ham try-except bilan o'rab oling
+    try:
+        profile = Profile.objects.filter(phone_number=phone_number).first()
+        if profile:
+            # Agar profil boshqa userga biriktirilgan bo‘lsa, xatolik qaytaramiz
+            if profile.user and profile.user != user:
+                return JsonResponse({'status': 'error', 'message': 'Bu raqam boshqa foydalanuvchiga biriktirilgan.'}, status=400)
+        else:
+            profile = Profile(phone_number=phone_number)
+        profile.user = user
+        profile.full_name = full_name
+        profile.home_address = home_address
+        profile.telegram_verified = True
+        profile.chat_id = chat_id
+        profile.temp_pin = password
+        profile.save()
+        created = True
+    except Exception as e:
+        print("PROFILE ERROR:", e)
+        print(traceback.format_exc())
+        return JsonResponse({'status': 'error', 'message': f'Profile yaratishda xatolik: {str(e)}'}, status=500)
+
+    return JsonResponse({
+        'status': 'ok',
+        'username': username,
+        'password': password,
+        'profile_created': created
+    })
+
+
+@csrf_exempt
+def api_bot_start(request):
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'Faqat POST kerak'}, status=405)
+
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'status': 'error', 'message': 'JSON xato'}, status=400)
+
+    chat_id = (data.get('chat_id') or '').strip()
+    if not chat_id:
+        return JsonResponse({'status': 'error', 'message': 'chat_id kerak'}, status=400)
+
+    profile = Profile.objects.filter(
+        user__isnull=False,
+        telegram_verified=True,
+        chat_id=chat_id
+    ).select_related('user').first()
+
+    if not profile or not profile.user:
+        return JsonResponse({'status': 'not_found', 'message': "Ro'yxatdan o'tmagansiz. Iltimos, ro'yxatdan o'tish uchun ma'lumotlarni yuboring."})
+
+    user = profile.user
+    # Agar oldindan saqlangan parol (temp_pin) bo'lsa, shu parolni qaytaramiz
+    if profile.temp_pin:
+        return JsonResponse({
+            'status': 'ok',
+            'username': user.username,
+            'password': profile.temp_pin,
+            'message': 'Hisob topildi. Mavjud parol qaytarildi.'
+        })
+
+    # Aks holda, bir marta parol yaratamiz va shu parolni keyin ham qaytaramiz
+    new_password = str(random.randint(100000, 999999))
+    try:
+        user.set_password(new_password)
+        user.save()
+        profile.temp_pin = new_password
+        profile.save()
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': f'Parolni yaratishda xatolik: {str(e)}'}, status=500)
+
+    return JsonResponse({
+        'status': 'ok',
+        'username': user.username,
+        'password': new_password,
+        'message': 'Hisob topildi. Yangi parol yaratildi.'
+    })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ============================
+# Kirish va chiqish
+# ============================
 def login_user(request):
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(username=username, password=password)
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                try:
+                    profile = user.profile
+                    if not profile.telegram_verified:
+                        messages.error(request, "Iltimos, avval Telegram orqali tasdiqlang.")
+                        return redirect('login')
+                except Profile.DoesNotExist:
+                    pass
 
-        if user is not None:
-            login(request, user) 
-            messages.success(request, ('Login muvaffaqiyatli amalga oshirildi'))
-            return redirect('home')
-        else:
-            messages.success(request, ('Login yoki parol xato'))
-            return redirect('login')
-    else: 
-        return render(request, 'login.html', {})
-    
-
-
-
+                login(request, user)
+                return redirect('home')
+            else:
+                messages.error(request, "Login yoki parol noto'g'ri.")
+    else:
+        form = LoginForm()
+    return render(request, 'login.html', {'form': form})
 
 def logout_user(request):
     logout(request)
-    messages.success(request, 'chiqish muvaffaqiyatli amalga oshirildi')
-    return redirect('home')
+    messages.success(request, "Tizimdan chiqildi.")
+    return redirect('login')
 
 
 
 
 
 
-def register_user(request):
-    form = SignUpForm()
-    if request.method == 'POST':
-        form = SignUpForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password1']
-
-            # ✅ Userni login qilish
-            login(request, user)
-
-            # ✅ Ro'yxatdan o'tgan userga avtomatik ravishda 'Foydalanuvchi' guruhini qo'shish
-            group = Group.objects.get(name='Foydalanuvchi')
-            user.groups.add(group)
-
-            messages.success(request, 'Ro\'yxatdan muvaffaqiyatli o\'tdingiz. Profilingizni to\'ldiring.')
-            return redirect('edit_profile')  # ✅ Ro'yxatdan keyin profilingni to'ldirishga yo'naltiramiz
-        
-        else:
-            messages.error(request, ('Ro\'yxatdan o\'tishda xato. Iltimos, qaytadan urinib ko\'ring.'))
-            return redirect('register')
-    else:
-        return render(request, 'register.html', {'form':form })
-
-def forgot_password(request):
-    if request.method == 'POST':
-        email = request.POST.get('email')
-        try:
-            user = User.objects.get(email=email)
-            # ✅ Parolni tiklash uchun link yuborish logikasi (masalan, email orqali)
-            messages.success(request, 'Parolni tiklash uchun email yuborildi.')
-            return redirect('login')
-        except User.DoesNotExist:
-            messages.error(request, 'Bu email bilan foydalanuvchi topilmadi. Iltimos, qaytadan urinib ko\'ring.')
-            return redirect('forgot_password')
-
-    return render(request, 'forgot_password.html')
 
 
-# Parolni yangilash
-@login_required
-def update_password(request):
-    current_user = request.user
-
-    if request.method == 'POST':
-        form = ChangePasswordForm(current_user, request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Parol muvaffaqiyatli yangilandi.")
-            return redirect('login')
-        else:
-            # ✅ Har bir xatoni alohida ko‘rsatamiz
-            for error in list(form.errors.values()):
-                messages.error(request, error)
-            return redirect('update_password')
-
-    form = ChangePasswordForm(current_user)
-    return render(request, "update_password.html", {'form': form})
 
 
-# Profilni tahrirlash
-@login_required
-def edit_profile(request):
-    # ✅ Profil mavjud bo'lmasa avtomatik yaratiladi
-    profile, created = Profile.objects.get_or_create(user=request.user)
-
-    if request.method == 'POST':
-        form = ProfileForm(request.POST, request.FILES, instance=profile)
-        if form.is_valid():
-            form.save()
-            return redirect('profile_detail')
-    else:
-        form = ProfileForm(instance=profile)
-
-    return render(request, 'edit_profile.html', {'form': form})
 
 
-# Profil tafsilotlari
-@login_required
-def profile_detail(request):
-    try:
-        profile = request.user.profile
-    except Profile.DoesNotExist:
-        # ✅ Profil yo'q bo‘lsa, foydalanuvchini tahrirlash sahifasiga yo‘naltiramiz
-        messages.warning(request, "Profil mavjud emas.")
-        return redirect('edit_profile')
 
-    return render(request, 'profile_detail.html', {'profile': profile})
-
-
-# ✅ Ruxsat berilgan foydalanuvchilargina kirishi mumkin bo‘lgan sahifa (masalan: Qabriston egasi uchun)
-@login_required
-def owner_dashboard(request):
-    # ✅ Faqatgina "Qabriston Egasi" guruhidagi user kirishi mumkin
-    if not request.user.groups.filter(name='Qabriston Egasi').exists():
-        messages.error(request, "Sizda bu sahifaga ruxsat yo'q.")
-        return redirect('home')
-
-    return render(request, 'owner_dashboard.html')  # Faqat egalar ko‘radigan HTML
 
 
 

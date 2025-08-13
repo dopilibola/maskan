@@ -4,23 +4,18 @@ from .import views
 
 
 urlpatterns = [
-    path('', views.home, name='home' ),
-    path('login/', views.login_user, name='login'),
-    path('logout/', views.logout_user, name='logout' ),
-    path('forgot_password/', views.forgot_password, name='forgot_password'),
-    
-    path('register/', views.register_user, name='register'),
-    path('update_password/', views.update_password, name='update_password' ),
-    path('/one-to-one/', include('one_to_one.urls')),
-    path('profile/', views.edit_profile, name='profile'),
-    path('profiledet/', views.profile_detail, name='profile_detail'),
+    # Ro'yxatdan o'tish jarayoni
 
-    # path('api/cemeteries/', views.get_cemeteries, name='get-cemeteries'),
-    # path('api/cemeteries/<int:cemetery_id>/graves/', views.get_graves, name='get-graves'),
-    # path('api/grave/<int:grave_id>/', views.get_grave_detail, name='get-grave-detail'),
+    
+    path('api/bot-register/', views.api_bot_register, name='api_bot_register'),
+    path('api/bot-start/', views.api_bot_start, name='api_bot_start'),
+
+
+    path('login/', views.login_user, name='login'),
+    path('', views.home, name='home' ),
+    path('/one-to-one/', include('one_to_one.urls')),
     path('product/<int:pk>', views.product, name='product' ),
     path('category/<str:foo>', views.category, name='category' ),
-
     path('qabristonmap/<int:pk>/', views.qabristonmap_view, name='qabristonmap'),
     path('qabristonmap/<int:pk>/search/', views.qabristonmap_search_page, name='qabristonmap_search'),
     path('qabristonmap/<int:pk>/search/ajax/', views.qabristonmap_search_ajax, name='qabristonmap_search_ajax'),

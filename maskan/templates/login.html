@@ -105,11 +105,11 @@
         <button type="submit" class="btn btn-login">Kirish</button>
     </form>
 
-    <button type="button" class="btn-secondary-action" onclick="window.location.href='{% url 'register' %}'">
+    {% comment %} <button type="button" class="btn-secondary-action" onclick="window.location.href='{% url 'register' %}'"> {% endcomment %}
         <i class="bi bi-person-plus-fill"></i>
         <span>Ro'yhatdan o'tish</span>
     </button>
-    <button type="button" class="btn-secondary-action" onclick="window.location.href='{% url 'forgot_password' %}'">
+    {% comment %} <button type="button" class="btn-secondary-action" onclick="window.location.href='{% url 'forgot_password' %}'"> {% endcomment %}
         <i class="bi bi-key-fill"></i>
         <span>Parolni unutdingizmi?</span>
     </button>
