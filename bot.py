@@ -32,8 +32,11 @@ async def cmd_start(message: types.Message, state: FSMContext):
         if body.get("status") == "ok":
             await state.clear()
             await message.answer(
-                f"Hisobingiz topildi!\nLogin: {body['username']}\nParol: {body['password']}\nIltimos, shu ma'lumotlar bilan saytda kiring.\n "
-
+                f"Hisobingiz topildi!\n"
+                f"Login: {body['username']}\n"
+                f"Parol: {body['password']}\n"
+                f"Iltimos, shu ma'lumotlar bilan saytda <a href='http://mas-kan.uz/maskan/login.uz'>Kirish</a>.",
+                parse_mode="HTML"
             )
             return
     except Exception:
