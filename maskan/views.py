@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
 from .models import  Product, Category, Qabristonmap, Location, Profile
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout as auth_logout
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from collections import defaultdict, OrderedDict
@@ -222,7 +222,7 @@ def login_user(request):
     return render(request, 'login.html', {'form': form})
 
 def logout_user(request):
-    logout(request)
+    auth_logout(request)
     messages.success(request, "Tizimdan chiqildi.")
     return redirect('login')
 

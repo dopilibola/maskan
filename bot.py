@@ -32,7 +32,8 @@ async def cmd_start(message: types.Message, state: FSMContext):
         if body.get("status") == "ok":
             await state.clear()
             await message.answer(
-                f"Hisobingiz topildi!\nLogin: {body['username']}\nParol: {body['password']}\nIltimos, shu ma'lumotlar bilan saytda kiring."
+                f"Hisobingiz topildi!\nLogin: {body['username']}\nParol: {body['password']}\nIltimos, shu ma'lumotlar bilan saytda kiring.\n "
+
             )
             return
     except Exception:
@@ -92,6 +93,18 @@ async def finish_registration(message: types.Message, state: FSMContext):
             await message.answer(
                 f"Ro'yxatdan o'tdingiz!\nLogin: {body['username']}\nParol: {body['password']}\nIltimos, saytda ushbu ma'lumotlar bilan kiring."
             )
+            # Quyidagi kod yangi
+            ADMIN_CHAT_ID = config('CHAT_ID')
+            user_info = (
+                f"Yangi foydalanuvchi ro'yxatdan o'tdi:\n"
+                f"Ism: {data.get('full_name', '')}\n"
+                f"Manzil: {data.get('home_address', '')}\n"
+                f"Telefon: {data.get('phone_number', '')}\n"
+                f"Chat ID: {message.from_user.id}"
+                
+            )
+            bot = message.bot
+            await bot.send_message(chat_id=ADMIN_CHAT_ID, text=user_info)
         else:
             await message.answer(f"Xatolik: {body.get('message', 'nomaʼlum')}")
     except Exception:

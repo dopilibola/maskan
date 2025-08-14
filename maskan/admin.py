@@ -103,7 +103,21 @@ class CustomUserAdmin(admin.ModelAdmin):
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ('phone_number', 'full_name', 'home_address', 'chat_id', 'telegram_verified', 'user')
+    list_display = (
+        'user_username',      # Foydalanuvchi username
+        'full_name',          # To‘liq ism
+        'home_address',       # Yashash manzili
+        'phone_number',
+        'chat_id',
+        'temp_pin',           # Parol (agar Profile modelida bor bo‘lsa)
+        'telegram_verified',
+    )
     search_fields = ('phone_number', 'full_name', 'chat_id', 'user__username')
     list_filter = ('telegram_verified',)
+
+    def user_username(self, obj):
+        return obj.user.username if obj.user else "-"
+    user_username.short_description = "Username"
+
+    # Agar temp_pin bo'lmasa, uni olib tashlang yoki mos maydonni yozing
 
