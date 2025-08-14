@@ -9,7 +9,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from decouple import config
-TOKEN = config('BOT_TOKEN')
+TOKEN = config('BOT_TOKEN2')
 SITE_URL = config('SITE_URL')
 
 
