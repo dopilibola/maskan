@@ -10,8 +10,12 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG') == 'True'
-ALLOWED_HOSTS = []
-# ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
+
+# CSRF trusted origins from env
+_csrf_env = os.getenv('DJANGO_CSRF_TRUSTED_ORIGINS', '')
+if _csrf_env:
+    CSRF_TRUSTED_ORIGINS = [o.strip() for o in _csrf_env.split(',') if o.strip()]
 
 
 # SECRET_KEY = os.getenv('SECRET_KEY')
@@ -88,8 +92,8 @@ DATABASES = {
         'NAME': os.getenv('DB_NAME'),
         'USER': os.getenv('DB_USER'),
         'PASSWORD': os.getenv('DB_PASSWORD'),
-        # 'HOST': os.getenv('DB_HOST'),
-        'HOST': 'localhost', 
+        'HOST': os.getenv('DB_HOST'),
+        # 'HOST': 'localhost', 
         # 'HOST': 'host.docker.internal',
         'PORT': os.getenv('DB_PORT'),
     }
