@@ -14,18 +14,6 @@ class QabristonForm(forms.ModelForm):
 
 
 
-# class UserUpdateForm(forms.ModelForm):
-#     class Meta:
-#         # model = User
-#         fields = ['username', 'email']
-
-#     def __init__(self, *args, **kwargs):
-#         super(UserUpdateForm, self).__init__(*args, **kwargs)
-
-#         for fieldname in ['username', 'email']:
-#             self.fields[fieldname].help_text = None
-
-
 class ImageForm(forms.ModelForm):
     class Meta:
         model = Image

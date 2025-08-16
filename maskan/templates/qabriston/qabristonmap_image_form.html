@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Qabriston rasmi yuklash</title>
+</head>
+<body>
+  <h2>Qabriston rasmi yuklash</h2>
+
+  {% if messages %}
+    <ul>
+      {% for m in messages %}
+        <li>{{ m }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Yuklash</button>
+  </form>
+
+  <p><a href="{% url 'qabristonmap_list' %}">⬅️ Marhumlar ro'yxati</a></p>
+</body>
+</html>

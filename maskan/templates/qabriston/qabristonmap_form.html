@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Marhum qo'shish</title>
+</head>
+<body>
+  <h2>{{ product.name }} — Yangi marhum</h2>
+
+  {% if messages %}
+    <ul>
+      {% for m in messages %}
+        <li>{{ m }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Saqlash</button>
+  </form>
+
+  <p><a href="{% url 'qabristonmap_list' %}">⬅️ Ro'yxatga qaytish</a></p>
+</body>
+</html>

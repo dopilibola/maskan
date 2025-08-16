@@ -37,6 +37,15 @@ class Profile(models.Model):
     home_address = models.CharField(max_length=255, blank=True)
     chat_id = models.CharField(max_length=50, blank=True, null=True)
 
+    product = models.ForeignKey(
+        'Product',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="Ruxsat berilgan qabriston"
+    )
+
+
     def __str__(self):
         return self.phone_number or (self.user.username if self.user else "No User")
 
@@ -121,23 +130,6 @@ class ProductImage(models.Model):
         verbose_name_plural = "Qabriston rasmlari"
 
 
-
-
-        
-
-only_year_validator = RegexValidator(
-    regex=r'^\d{4}$',
-    message='Faqat 4 xonali yil kiriting, masalan: 1990 yoki 2023'
-)
-
-
-only_year_validator = RegexValidator(
-    regex=r'^\d{4}$',
-    message='Faqat 4 xonali yil kiriting, masalan: 1990 yoki 2023'
-)
-
-
-
 only_year_validator = RegexValidator(
     regex=r'^\d{4}$',
     message='Faqat 4 xonali yil kiriting, masalan: 1990 yoki 2023'
@@ -160,44 +152,6 @@ class Qabristonmap(models.Model):
     years_new = models.CharField(
         max_length=4,
         blank=True,
-        validators=[only_year_validator],
-        verbose_name='Vafot yili'
-    )
-    years = models.CharField(max_length=20, blank=True)
-    qator = models.CharField(max_length=20, blank=True)
-    qabr_soni = models.CharField(max_length=20, blank=True)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='green')
-
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='qabristonmaps', verbose_name="Qabriston")
-
-    def save(self, *args, **kwargs):
-        if self.years_old and self.years_new:
-            self.years = f"{self.years_old} - {self.years_new}"
-        else:
-            self.years = ""
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return f"{self.ism_familiyasi_marhum} ({self.status})"
-
-    class Meta:
-        verbose_name = "Marhum"
-        verbose_name_plural = "Marhumlar"
-
-    STATUS_CHOICES = [
-        ('green', 'Yashil'),
-        ('yellow', 'Sariq'),
-        ('red', 'Qizil'),
-    ]
-
-    ism_familiyasi_marhum = models.CharField(max_length=20, blank=True)
-    years_old = models.CharField(
-        max_length=4, blank=True,
-        validators=[only_year_validator],
-        verbose_name='Tug‘ilgan yil'
-    )
-    years_new = models.CharField(
-        max_length=4, blank=True,
         validators=[only_year_validator],
         verbose_name='Vafot yili'
     )
@@ -237,46 +191,8 @@ class Qabristonmap(models.Model):
         verbose_name = "Marhum"
         verbose_name_plural = "Marhumlar"
 
-    STATUS_CHOICES = [
-        ('green', 'Yashil'),
-        ('yellow', 'Sariq'),
-        ('red', 'Qizil'),
-    ]
 
-    ism_familiyasi_marhum = models.CharField(max_length=20, blank=True)
-    years_old = models.CharField(
-        max_length=4,
-        blank=True,
-        validators=[only_year_validator],
-        verbose_name='Tug‘ilgan yil'
-    )
-    years_new = models.CharField(
-        max_length=4,
-        blank=True,
-        validators=[only_year_validator],
-        verbose_name='Vafot yili'
-    )
-    years = models.CharField(max_length=20, blank=True)
-    qator = models.CharField(max_length=20, blank=True)
-    qabr_soni = models.CharField(max_length=20, blank=True)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='green')
-
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='qabristonmaps', verbose_name="Qabriston")
-
-    def save(self, *args, **kwargs):
-        if self.years_old and self.years_new:
-            self.years = f"{self.years_old} - {self.years_new}"
-        else:
-            self.years = ""
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return f"{self.ism_familiyasi_marhum} ({self.status})"
-
-    class Meta:
-        verbose_name = "Marhum"
-        verbose_name_plural = "Marhumlar"
-
+        
 
 
 class Qabristonmap_image(models.Model):
@@ -290,11 +206,3 @@ class Qabristonmap_image(models.Model):
     class Meta:
         verbose_name = "qabrnig rasmi"
         verbose_name_plural = "Qabrning rasmlari"
-
-    
-# class UserAccess(models.Model):
-#     user = models.OneToOneField(User, on_delete=models.CASCADE)
-#     categories = models.ManyToManyField(Category)
-
-#     def __str__(self):
-#         return self.user.username

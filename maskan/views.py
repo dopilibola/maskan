@@ -8,7 +8,9 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from collections import defaultdict, OrderedDict
 from django.db.models import Q
-from .forms import LoginForm
+from .forms import LoginForm, QabristonmapForm, QabristonmapImageForm
+from django.core.exceptions import PermissionDenied
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 
 import random
@@ -155,45 +157,6 @@ def api_bot_start(request):
         'message': 'Hisob topildi. Yangi parol yaratildi.'
     })
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # ============================
 # Kirish va chiqish
 # ============================
@@ -225,26 +188,6 @@ def logout_user(request):
     auth_logout(request)
     messages.success(request, "Tizimdan chiqildi.")
     return redirect('login')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 def product(request, pk):
     product = Product.objects.get(id=pk)
@@ -378,3 +321,73 @@ def qabristonmap_search_ajax(request, pk):
         })
 
     return JsonResponse({'results': result})
+
+
+
+def _get_assigned_product_or_403(user):
+    """
+    User'ga admin paneldan biriktirilgan bitta Product (qabriston) ni olib keladi.
+    Bo'lmasa 403.
+    """
+    if not hasattr(user, "profile") or not user.profile.product:
+        raise PermissionDenied("Sizga qabriston biriktirilmagan. Administrator bilan bog'laning.")
+    return user.profile.product
+
+
+@login_required(login_url="/login/")
+def qabristonmap_list(request):
+    """
+    Foydalanuvchi faqat o'ziga biriktirilgan Product ichidagi marhumlar ro'yxatini ko'radi.
+    """
+    product = _get_assigned_product_or_403(request.user)
+    items = Qabristonmap.objects.filter(product=product).order_by("-id")
+    return render(request, "qabriston/qabristonmap_list.html", {"items": items, "product": product})
+
+
+@login_required(login_url="/login/")
+def qabristonmap_create(request):
+    """
+    Yangi Qabristonmap qo'shish (faqat o'ziga biriktirilgan Product ichida).
+    """
+    product = _get_assigned_product_or_403(request.user)
+
+    if request.method == "POST":
+        form = QabristonmapForm(request.POST)
+        if form.is_valid():
+            obj = form.save(commit=False)
+            obj.product = product  # 🔒 muhim: user o'zi tanlamaydi, majburan biriktiramiz
+            obj.save()
+            messages.success(request, "Marhum ma'lumoti saqlandi.")
+            return redirect("qabristonmap_list")
+        else:
+            messages.error(request, "Formada xatolik bor. Iltimos tekshirib qayta yuboring.")
+    else:
+        form = QabristonmapForm()
+
+    return render(request, "qabriston/qabristonmap_form.html", {"form": form, "product": product})
+
+
+@login_required(login_url="/login/")
+def qabristonmap_image_create(request):
+    """
+    Qabriston rasmi yuklash. Foydalanuvchi faqat o'z Productiga tegishli Qabristonmap larni ko'radi.
+    """
+    _ = _get_assigned_product_or_403(request.user)
+
+    if request.method == "POST":
+        form = QabristonmapImageForm(request.POST, request.FILES, user=request.user)
+        if form.is_valid():
+            img = form.save(commit=False)
+            # Qo'shimcha xavfsizlik: tanlangan qabristonmap ham userga tegishli bo'lsin
+            assigned_product = request.user.profile.product
+            if img.product.product_id != assigned_product.id:
+                raise PermissionDenied("Sizga tegishli bo'lmagan marhumga rasm yuklay olmaysiz.")
+            img.save()
+            messages.success(request, "Rasm yuklandi.")
+            return redirect("qabristonmap_list")
+        else:
+            messages.error(request, "Formada xatolik bor. Iltimos tekshirib qayta yuboring.")
+    else:
+        form = QabristonmapImageForm(user=request.user)
+
+    return render(request, "qabriston/qabristonmap_image_form.html", {"form": form})

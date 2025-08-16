@@ -174,8 +174,6 @@
     {% endfor %}
   </div>
 </div>
-
-<!-- Modal oynalar -->
 {% for qator, qabrlar in grouped_qabrlar.items %}
   {% for qabr in qabrlar %}
     <div class="modal" id="modal-{{ qabr.id }}">
@@ -183,23 +181,25 @@
         <span class="close" onclick="closeModal({{ qabr.id }})">&times;</span>
         <h2>{{ qabr.ism_familiyasi_marhum }}</h2>
         <p><em>{{ qabr.karta_number }}</em></p>
-
         <div class="grave-info-box">
-          <div><strong>Yoshi:</strong><br>{{ qabr.years }}</div>
-          <div><strong>Tug‘ilgan:</strong><br>{{ qabr.years_new }}</div>
-          <div><strong>Vafot:</strong><br>{{ qabr.years_old }}</div>
+          <div><strong>Istqomat yillari:</strong><br>{{ qabr.years }}</div>
+          <div><strong>Tug‘ilgan yili:</strong><br>{{ qabr.years_new }}</div>
+          <div><strong>Vafot yili:</strong><br>{{ qabr.years_old }}</div>
           <div><strong>Qator:</strong><br>{{ qabr.qator }}</div>
-          <div><strong>Qabr #:</strong><br>{{ qabr.qabr_soni }}</div>
+          <div><strong>Qabr :</strong><br>{{ qabr.qabr_soni }}</div>
           <div><strong>Qabriston:</strong><br>{{ product }}</div>
         </div>
-
         {% for img in qabr.images.all %}
           <img src="{{ img.image.url }}" alt="Qabr rasmi">
         {% empty %}
           <p>Rasm yo‘q</p>
         {% endfor %}
 
-        <button class="btn-edit">✏️ Edit</button>
+          <a href="https://t.me/maskanuz1?text=asalomu alaykum qabrni tozalatirmoqchi edim shunga batafsil ma'lumot bera olasizmi ?  Qabristondagi: {{ product }} qondoshim {{ qabr.ism_familiyasi_marhum }} qabrini tozalash hizmatidan foydalanmoqchi edim. " target="_blank" rel="noopener">
+            <button class="btn-edit">Qabirni tozalash </button>
+            {% comment %} shu yerga post jonatib qancah odam bosvotganini bilish kerak  {% endcomment %}
+          </a>
+        
       </div>
     </div>
   {% endfor %}
