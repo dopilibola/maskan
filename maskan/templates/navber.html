@@ -23,8 +23,8 @@
                     {% if user.is_staff %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'add_infodata' %}">marhumni ro'yhatdan o'tkazish </a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'qabristonmap_list' %}">qabristonlar</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'qabristonmap_create' %}">qabriston qo'shish</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'qabristonmap_image_create' %}">qabriston rasmi yuklash</a></li
+                        {% comment %} <li class="nav-item"><a class="nav-link" href="{% url 'qabristonmap_create' %}">qabriston qo'shish</a></li> {% endcomment %}
+                        {% comment %} <li class="nav-item"><a class="nav-link" href="{% url 'qabristonmap_image_create' %}">qabriston rasmi yuklash</a></li {% endcomment %}
 
 
                         {% comment %} <li class="nav-item"><a class="nav-link" href="{% url 'qabr_plus' %}">qabr qo'shish </a></li> {% endcomment %}
