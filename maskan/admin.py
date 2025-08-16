@@ -39,9 +39,8 @@ class ProductAdmin(admin.ModelAdmin):
         qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs
-        if hasattr(request.user, "profile") and request.user.profile:
-            return qs.filter(category=request.user.profile.product.category) \
-                if request.user.profile.product else qs.none()
+        if hasattr(request.user, "profile") and request.user.profile.product:
+            return qs.filter(category=request.user.profile.product.category)
         return qs.none()
 
     def location_link(self, obj):
@@ -182,3 +181,30 @@ class ProfileAdmin(admin.ModelAdmin):
     def user_username(self, obj):
         return obj.user.username if obj.user else "-"
     user_username.short_description = "Username"
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        if hasattr(request.user, "profile") and request.user.profile.product:
+            return qs.filter(product=request.user.profile.product)
+        return qs.none()
+
+    def has_change_permission(self, request, obj=None):
+        if request.user.is_superuser:
+            return True
+        if obj and hasattr(request.user, "profile") and request.user.profile.product:
+            return obj.product == request.user.profile.product
+        return False
+
+    def has_add_permission(self, request):
+        if request.user.is_superuser:
+            return True
+        return hasattr(request.user, "profile") and request.user.profile.product is not None
+
+    def has_delete_permission(self, request, obj=None):
+        if request.user.is_superuser:
+            return True
+        if obj and hasattr(request.user, "profile") and request.user.profile.product:
+            return obj.product == request.user.profile.product
+        return False
