@@ -100,9 +100,11 @@
     margin: 5% auto;
     padding: 20px;
     width: 90%;
-    max-width: 500px;
+    max-width: 600px;
     border-radius: 10px;
     text-align: center;
+    max-height: 80vh;
+    overflow-y: auto;
   }
 
   .modal-content img {
@@ -145,6 +147,12 @@
     border-radius: 6px;
     cursor: pointer;
   }
+
+  .dua-text {
+    text-align: left;
+    margin-bottom: 20px;
+  }
+  .dua-text p { margin: 5px 0; }
 </style>
 
 <div class="container py-4">
@@ -174,6 +182,7 @@
     {% endfor %}
   </div>
 </div>
+
 {% for qator, qabrlar in grouped_qabrlar.items %}
   {% for qabr in qabrlar %}
     <div class="modal" id="modal-{{ qabr.id }}">
@@ -195,11 +204,66 @@
           <p>Rasm yo‘q</p>
         {% endfor %}
 
-          <a href="https://t.me/maskanuz1?text=asalomu alaykum qabrni tozalatirmoqchi edim shunga batafsil ma'lumot bera olasizmi ?  Qabristondagi: {{ product }} qondoshim {{ qabr.ism_familiyasi_marhum }} qabrini tozalash hizmatidan foydalanmoqchi edim. " target="_blank" rel="noopener">
-            <button class="btn-edit">Qabirni tozalash </button>
-            {% comment %} shu yerga post jonatib qancah odam bosvotganini bilish kerak  {% endcomment %}
-          </a>
-        
+        <a href="https://t.me/maskanuz1?text=asalomu alaykum qabrni tozalatirmoqchi edim shunga batafsil ma'lumot bera olasizmi ?  Qabristondagi: {{ product }} qondoshim {{ qabr.ism_familiyasi_marhum }} qabrini tozalash hizmatidan foydalanmoqchi edim. " target="_blank" rel="noopener">
+          <button class="btn-edit">Qabirni tozalash </button>
+        </a>
+        <a>
+          <button class="btn-edit" onclick="showDuaModal({{ qabr.id }})">Kerakli Duolar</button>
+        </a>
+      </div>
+    </div>
+
+    <!-- Duolar Modal -->
+    <div class="modal" id="dua-modal-{{ qabr.id }}">
+      <div class="modal-content">
+        <span class="close" onclick="closeDuaModal({{ qabr.id }})">&times;</span>
+        <h2>Qabr uchun o‘qiladigan duolar</h2>
+
+        <div class="dua-text">
+          <h4>1. Fotiha surasi</h4>
+          <p><b>O‘qilishi (lotincha):</b><br>
+          Bismillahir rohmanir rohiym<br>
+          Alhamdu lillahi robbil ‘aalamiin<br>
+          Ar-rohmanir rohiym<br>
+          Maaliki yavmiddiin<br>
+          Iyyaka na’budu wa iyyaka nasta’iyn<br>
+          Ihdinas sirootol mustaqiym<br>
+          Sirootollaziyna an‘amta ‘alayhim<br>
+          G‘oyril mag‘zuubi ‘alayhim wa lad-doolliyn</p>
+          <p><b>Tarjima:</b> Mehribon va rahmli Alloh nomi bilan. Hamd olamlar Parvardigori Allohgakidir... (Fotiha 1–7).</p>
+        </div>
+
+        <div class="dua-text">
+          <h4>2. Ixlos surasi</h4>
+          <p><b>O‘qilishi (lotincha):</b><br>
+          Bismillahir rohmanir rohiym<br>
+          Qul huvallohu ahad<br>
+          Allohus-somad<br>
+          Lam yalid va lam yuulad<br>
+          Va lam yakun lahu kufuwan ahad</p>
+          <p><b>Tarjima:</b> Ayting: U Alloh yakkadir... (Ixlos 1–4).</p>
+        </div>
+
+        <div class="dua-text">
+          <h4>3. Oyatul Kursiy</h4>
+          <p><b>O‘qilishi (lotincha):</b><br>
+          Allohu laa ilaaha illaa huwa-l-hayyul qoyyuum<br>
+          Laa ta’xuzuhuu sinatuw-wa laa navm<br>
+          Lahu maa fissamaawaati wa maa fil-ard<br>
+          Man zallazii yashfa’u ‘indahuu illaa bi-iznih<br>
+          Ya’lamu maa bayna aydiihim wa maa xolfahum<br>
+          Wa laa yuhiytuuna bi shay’im-min ‘ilmihi illaa bimaa shaa’<br>
+          Wasi’a kursiyyuhus samaawaati wal-ard<br>
+          Wa laa ya’uduhuu hifzuhumaa<br>
+          Wa huwal ‘aliyyul ‘aziym</p>
+          <p><b>Tarjima:</b> Alloh – undan o‘zga iloh yo‘q. U tirik, boqiy... (Baqara, 255-oyat).</p>
+        </div>
+
+        <hr>
+        <p><b>Manbalar:</b><br>
+          – Qur’oni Karim (Fotiha 1–7, Ixlos 1–4, Baqara 255)<br>
+          – Hadis: “Qabristonga borganingizda, Qur’on o‘qing va duolarni marhumga bag‘ishlang.” (Muslim, Abu Dawud rivoyatlari).
+        </p>
       </div>
     </div>
   {% endfor %}
@@ -259,6 +323,14 @@
 
   function closeModal(id) {
     document.getElementById('modal-' + id).style.display = 'none';
+  }
+
+  function showDuaModal(id) {
+    document.getElementById('dua-modal-' + id).style.display = 'block';
+  }
+
+  function closeDuaModal(id) {
+    document.getElementById('dua-modal-' + id).style.display = 'none';
   }
 
   window.onclick = function(event) {
