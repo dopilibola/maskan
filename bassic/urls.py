@@ -16,6 +16,12 @@ urlpatterns = [
 
 ]
 
+# Error handlerlarni maskan/views.py dan ulash
+handler400 = maskan_views.custom_error_view
+handler403 = maskan_views.custom_error_view
+handler404 = maskan_views.custom_error_view
+handler500 = maskan_views.custom_error_view
+
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

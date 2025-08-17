@@ -161,6 +161,10 @@ def api_bot_start(request):
 # Kirish va chiqish
 # ============================
 def login_user(request):
+    # 🔹 Agar foydalanuvchi allaqachon login qilgan bo‘lsa → home sahifaga qaytadi
+    if request.user.is_authenticated:
+        return redirect('home')
+
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -182,6 +186,7 @@ def login_user(request):
                 messages.error(request, "Login yoki parol noto'g'ri.")
     else:
         form = LoginForm()
+
     return render(request, 'login.html', {'form': form})
 
 def logout_user(request):
@@ -391,3 +396,14 @@ def qabristonmap_image_create(request):
         form = QabristonmapImageForm(user=request.user)
 
     return render(request, "qabriston/qabristonmap_image_form.html", {"form": form})
+
+
+
+
+def custom_error_view(request, exception=None):
+    if request.user.is_authenticated:   # login bo'lganmi?
+        messages.error(request, "Xatolik yuz berdi, siz Bosh sahifaga yo‘naltirildingiz.")
+        return redirect('home')         
+    else:
+        messages.error(request, "Xatolik yuz berdi, tizimga kirishingiz kerak.")
+        return redirect('login')     
